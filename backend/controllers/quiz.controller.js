@@ -313,7 +313,7 @@ const createAttempt = async (req, res)=>{
 
         user.quizzesAttempted.push(createdAttempt._id)
         await user.save()
-
+        res.status(200).json({createdAttempt})
     } catch (error) {
         res.status(500).json({error: error.message})
     }

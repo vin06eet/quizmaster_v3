@@ -6,6 +6,7 @@ import { Landing } from "./pages/Landing";
 import { UploadForm } from "./pages/Upload";
 import { DataDisplayPage } from "./pages/Browse";
 import { UpdateQuiz } from './pages/Update'
+import { TakeQuiz } from "./pages/TakeQuiz";
 
 function Home(){
   return (
@@ -34,6 +35,7 @@ function App() {
         <Route path="/upload" element={<UploadForm />} />
         <Route path="/browse" element={<DataDisplayPage/>} />
         <Route path="/update" element={<UpdateQuiz/>} />
+        <Route path="/take/:quizId" element={<TakeQuiz/>} />
       </Routes>
     </Router>
   );

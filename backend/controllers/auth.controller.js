@@ -30,9 +30,16 @@ const register = async (req, res) => {
             password
         });
         await user.save();
+        const token = jwt.sign({ _id: user._id }, process.env.JWT_KEY, { expiresIn: process.env.JWT_EXPIRES_IN });
+        res.cookie('token', token, {
+            httpOnly: true,
+            maxAge: process.env.JWT_EXPIRES_IN,
+            sameSite: 'strict'
+        });
         res.status(201).json({
             message: "User created successfully",
-            id: user._id
+            id: user._id,
+            token: token
         });
     } catch (error) {
         res.status(500).json({ error: error.message });

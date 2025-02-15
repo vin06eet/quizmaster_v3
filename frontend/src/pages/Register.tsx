@@ -19,6 +19,7 @@ function Register() {
     try {
       const response = await axios.post("http://localhost:8080/api/register", { username, email, password });
       
+      // Set authentication tokens
       Cookies.set("token", response.data.token, {
         path: "/",
         expires: 7, // 7 days
@@ -26,7 +27,8 @@ function Register() {
         sameSite: "Strict",
       });
       
-      navigate("/dashboard");
+      // Redirect to landing page after successful registration
+      navigate("/landing");
     } catch (error: any) {
       setError(error.response?.data?.message || "Something went wrong. Please try again.");
     }

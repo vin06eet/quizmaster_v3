@@ -16,6 +16,9 @@ function Landing(){
                     <Link to="/browse">
                         <Button className="bg-gray-500 hover:bg-gray-600 border-none">Browse</Button>
                     </Link>
+                    <Link to="/update">
+                        <Button className="bg-gray-500 hover:bg-gray-600 border-none">Update</Button>
+                    </Link>
                 </div>
                 <div className="p-1">
                 <Button className="bg-gray-500 hover:bg-gray-600 border-none">Profile</Button>

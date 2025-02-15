@@ -1,5 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const UploadForm: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -42,8 +44,9 @@ const UploadForm: React.FC = () => {
     <div>
       <h1>Upload a File</h1>
       <form onSubmit={handleSubmit}>
-        <input type="file" onChange={handleFileChange} />
-        <button type="submit">Upload</button>
+
+        <Input type="file" onChange={handleFileChange} />
+        <Button type="submit">Upload</Button>
       </form>
       {message && <p>{message}</p>}
     </div>
