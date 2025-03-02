@@ -47,6 +47,21 @@ const MyQuizzes: React.FC = () => {
     navigate(`/update/${quizId}`);
   };
 
+  const handleDeleteQuiz = async (quizId: string) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this quiz?");
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(`http://localhost:8080/api/quiz/${quizId}`, { withCredentials: true });
+      
+      // Remove the deleted quiz from state
+      setQuizzes((prevQuizzes) => prevQuizzes.filter((quiz) => quiz._id !== quizId));
+    } catch (error) {
+      console.error("Error deleting quiz:", error);
+      alert("Failed to delete quiz. Please try again.");
+    }
+  };
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -67,8 +82,11 @@ const MyQuizzes: React.FC = () => {
               <button className="mr-2 p-2 bg-blue-500 text-white rounded" onClick={() => handleTakeQuiz(quiz._id)}>
                 Take Quiz
               </button>
-              <button className="p-2 bg-green-500 text-white rounded" onClick={() => handleUpdateQuiz(quiz._id)}>
+              <button className="mr-2 p-2 bg-green-500 text-white rounded" onClick={() => handleUpdateQuiz(quiz._id)}>
                 Update Quiz
+              </button>
+              <button className="p-2 bg-red-500 text-white rounded" onClick={() => handleDeleteQuiz(quiz._id)}>
+                Delete
               </button>
             </div>
           </li>

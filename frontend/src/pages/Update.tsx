@@ -5,6 +5,7 @@ import { Input } from '../components/ui/input';
 import { useParams } from 'react-router-dom';
 
 interface Question {
+  answer: string | number | readonly string[] | undefined;
   _id: string;
   question: string;
   options: string[];
@@ -93,7 +94,7 @@ const UpdateQuiz: React.FC = () => {
   const handleCorrectAnswerChange = (questionId: string, value: string) => {
     if (quiz) {
       const updatedQuestions = quiz.questions.map((q) =>
-        q._id === questionId ? { ...q, correctAnswer: value } : q
+        q._id === questionId ? { ...q, answer: value } : q
       );
       setQuiz({ ...quiz, questions: updatedQuestions });
     }
@@ -179,7 +180,7 @@ const UpdateQuiz: React.FC = () => {
                 <div>
                   <label className="block mb-2">Correct Answer:</label>
                   <select
-                    value={question.correctAnswer}
+                    value={question.answer}
                     onChange={(e) => handleCorrectAnswerChange(question._id, e.target.value)}
                     className="w-full p-2 border rounded bg-white"
                     required
