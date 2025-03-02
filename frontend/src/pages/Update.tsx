@@ -1,7 +1,8 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import { useParams } from 'react-router-dom';
 
 interface Question {
   _id: string;
@@ -18,37 +19,33 @@ interface Quiz {
 }
 
 const UpdateQuiz: React.FC = () => {
-  const [quizId, setQuizId] = useState<string>('');
+  const { quizId } = useParams<{ quizId: string }>();
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [message, setMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Fetch quiz data
-  const fetchQuiz = async () => {
-    if (!quizId) return;
-    setLoading(true);
-    try {
-      const response = await axios.get(`http://localhost:8080/api/quiz/${quizId}`, {
-        withCredentials: true,
-      });
-      const fetchedQuiz = response.data.quiz;
-      // Deep clone the entire quiz object
-      const clonedQuiz = JSON.parse(JSON.stringify(fetchedQuiz)) as Quiz;
-      setQuiz(clonedQuiz);
-      setMessage('');
-    } catch (error) {
-      setMessage('Error fetching quiz. Please check the ID.');
-      setQuiz(null);
-    }
-    setLoading(false);
-  };
-  
-  
-  
-  // Handle quiz ID input
-  const handleQuizIdChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setQuizId(e.target.value);
-  };
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      if (!quizId) return;
+      setLoading(true);
+      try {
+        const response = await axios.get(`http://localhost:8080/api/quiz/${quizId}`, {
+          withCredentials: true,
+        });
+        const fetchedQuiz = response.data.quiz;
+        // Deep clone the quiz object
+        const clonedQuiz = JSON.parse(JSON.stringify(fetchedQuiz)) as Quiz;
+        setQuiz(clonedQuiz);
+        setMessage('');
+      } catch (error) {
+        setMessage('Error fetching quiz. Please check the ID.');
+        setQuiz(null);
+      }
+      setLoading(false);
+    };
+
+    fetchQuiz();
+  }, [quizId]); // Runs when quizId changes
 
   // Handle title change
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -76,8 +73,6 @@ const UpdateQuiz: React.FC = () => {
       };
     });
   };
-  
-  
 
   // Handle option change
   const handleOptionChange = (questionId: string, optionIndex: number, value: string) => {
@@ -93,13 +88,11 @@ const UpdateQuiz: React.FC = () => {
       };
     });
   };
-  
-  
 
   // Handle correct answer change
   const handleCorrectAnswerChange = (questionId: string, value: string) => {
     if (quiz) {
-      const updatedQuestions = quiz.questions.map(q =>
+      const updatedQuestions = quiz.questions.map((q) =>
         q._id === questionId ? { ...q, correctAnswer: value } : q
       );
       setQuiz({ ...quiz, questions: updatedQuestions });
@@ -112,11 +105,9 @@ const UpdateQuiz: React.FC = () => {
     if (!quiz) return;
 
     try {
-      const response = await axios.patch(
-        `http://localhost:8080/api/quiz/${quizId}`,
-        quiz,
-        { withCredentials: true }
-      );
+      await axios.patch(`http://localhost:8080/api/quiz/${quizId}`, quiz, {
+        withCredentials: true,
+      });
       setMessage('Quiz updated successfully!');
     } catch (error) {
       setMessage('Error updating quiz. Please try again.');
@@ -126,41 +117,19 @@ const UpdateQuiz: React.FC = () => {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Update Quiz</h1>
-      
-      {/* Quiz ID Input */}
-      <div className="mb-6">
-        <label className="block mb-2">Quiz ID:</label>
-        <div className="flex gap-2">
-          <Input
-            type="text"
-            value={quizId}
-            onChange={handleQuizIdChange}
-            placeholder="Enter Quiz ID"
-            className="flex-1"
-          />
-          <Button onClick={fetchQuiz} disabled={!quizId || loading}>
-            {loading ? 'Loading...' : 'Fetch Quiz'}
-          </Button>
-        </div>
-      </div>
 
-      {message && (
-        <p className="my-4 p-2 bg-green-100 text-green-700 rounded">{message}</p>
-      )}
+      {message && <p className="my-4 p-2 bg-green-100 text-green-700 rounded">{message}</p>}
 
-      {quiz && (
+      {loading ? (
+        <p>Loading...</p>
+      ) : quiz ? (
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Title and Description */}
           <div>
             <label className="block mb-2">Title:</label>
-            <Input
-              type="text"
-              value={quiz.title}
-              onChange={handleTitleChange}
-              required
-            />
+            <Input type="text" value={quiz.title} onChange={handleTitleChange} required />
           </div>
-          
+
           <div>
             <label className="block mb-2">Description:</label>
             <textarea
@@ -178,7 +147,7 @@ const UpdateQuiz: React.FC = () => {
             {quiz.questions.map((question, qIndex) => (
               <div key={question._id} className="p-4 border rounded">
                 <h3 className="font-medium mb-2">Question {qIndex + 1}</h3>
-                
+
                 {/* Question Text */}
                 <div className="mb-4">
                   <label className="block mb-2">Question Text:</label>
@@ -230,6 +199,8 @@ const UpdateQuiz: React.FC = () => {
             Update Quiz
           </Button>
         </form>
+      ) : (
+        <p>No quiz found.</p>
       )}
     </div>
   );

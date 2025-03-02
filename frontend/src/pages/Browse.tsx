@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface DataItem {
   _id: string;
@@ -9,9 +10,11 @@ interface DataItem {
 }
 
 const DataDisplayPage: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [data, setData] = useState<DataItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,6 +41,10 @@ const DataDisplayPage: React.FC = () => {
     fetchData();
   }, []);
 
+  const handleTakeQuiz = (quizId: string) => {
+    navigate(`/take/${quizId}`);
+  }
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -49,14 +56,26 @@ const DataDisplayPage: React.FC = () => {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Quizzes</h1>
+      <input
+        type="text"
+        placeholder="Search quizzes by title"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="mb-4 p-2 border rounded"
+      />
       <ul className="space-y-4">
-        {data.map((item, index) => (
-          <li key={item._id} className="p-4 border rounded-lg shadow-md">
-            <h3 className="text-xl font-semibold">{index + 1}. {item.title}</h3>
-            <p className="text-gray-600">{item.description}</p>
-            <p className="text-sm">{item.public ? 'Public' : 'Private'}</p>
-          </li>
-        ))}
+        {data
+          .filter((item) => item.title.toLowerCase().includes(searchQuery.toLowerCase()))
+          .map((item, index) => (
+            <li key={item._id} className="p-4 border rounded-lg shadow-md">
+              <h3 className="text-xl font-semibold">{index + 1}. {item.title}</h3> 
+              <button className="mt-2 p-2 bg-blue-500 text-white rounded" onClick={() => handleTakeQuiz(item._id)}>
+                Take Quiz
+              </button>
+              <p className="text-gray-600">{item.description}</p>
+              <p className="text-sm">{item.public ? 'Public' : 'Private'}</p>
+            </li>
+          ))}
       </ul>
     </div>
   );

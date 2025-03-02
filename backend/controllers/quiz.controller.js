@@ -394,6 +394,21 @@ const saveQuizAttempt = async (req, res)=>{
     }
 }
 
+const getMyQuizzes = async (req, res) => {
+    try {
+        const userID = req.user._id
+        if (!mongoose.Types.ObjectId.isValid(userID))
+            return res.status(400).json({ error: 'Invalid user ID' })
+        const user = await User.findById(userID).populate('quizzesCreated')
+        if (!user)
+            return res.status(404).json({ error: 'User not found' })
+        res.status(200).json({ user: { quizzesCreated: user.quizzesCreated } })
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
+};
+
+
 export {
     getAllQuizzes,
     getQuizById,
@@ -407,6 +422,7 @@ export {
     getAllPublicQuizzes,
     saveQuestion,
     saveQuizAttempt,
-    createAttempt
+    createAttempt,
+    getMyQuizzes
 }
 

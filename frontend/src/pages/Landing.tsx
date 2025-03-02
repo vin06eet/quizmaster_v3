@@ -6,7 +6,7 @@ function Landing(){
         <div className="bg-gray-400 w-screen h-screen">
             <div className="flex justify-between bg-gray-500 w-screen h-12">
                 <div className="p-1 sm:invisible">
-                <Button className="bg-gray-500 hover:bg-gray-600 border-none">Menu</Button>
+                <Button className="menu bg-gray-500 hover:bg-gray-600 border-none">Menu</Button>
                 </div>
                 <div className=" hidden sm:flex space-x-8 p-1 ">
                     <Button className="bg-gray-500 hover:bg-gray-600 border-none">About Us</Button>
@@ -16,8 +16,8 @@ function Landing(){
                     <Link to="/browse">
                         <Button className="bg-gray-500 hover:bg-gray-600 border-none">Browse</Button>
                     </Link>
-                    <Link to="/update">
-                        <Button className="bg-gray-500 hover:bg-gray-600 border-none">Update</Button>
+                    <Link to="/myQuizzes">
+                        <Button className="bg-gray-500 hover:bg-gray-600 border-none">My Quizzes</Button>
                     </Link>
                 </div>
                 <div className="p-1">
