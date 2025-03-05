@@ -81,7 +81,10 @@ const uploadQuiz = async (req, res)=>{
             return res.status(404).json({error: 'user not found'})
         user.quizzesCreated.push(savedQuiz._id.toString())
         await user.save()
-        res.status(200).json({message: "Quiz uploaded successfully"})
+        res.status(200).json({
+            message: "Quiz uploaded successfully",
+            id: savedQuiz._id.toString()
+        })
     } catch (error) {
         res.status(500).json({error: error.message})
     }
@@ -367,11 +370,12 @@ const saveQuizAttempt = async (req, res)=>{
                 (q) => q.questionNumber.toString() === question.questionNumber.toString()
             )
             const correctAnswer = correspondingQuestion.answer
+            const marksAwarded = correspondingQuestion.marks
             
             if(question.markedOption){
                 if (question.markedOption === correctAnswer) {
                     question.isCorrect = true;
-                    question.score = 1; 
+                    question.score = marksAwarded; 
                 } else {
                     question.isCorrect = false;
                     question.score = 0;

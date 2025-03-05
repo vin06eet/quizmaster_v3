@@ -1,11 +1,15 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 const UploadForm: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
+
   const [message, setMessage] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files && e.target.files[0]) {
@@ -21,6 +25,8 @@ const UploadForm: React.FC = () => {
       return;
     }
 
+    setLoading(true); // Start loading
+    setLoading(true); // Start loading
     const formData = new FormData();
     formData.append('file', file);
 
@@ -33,10 +39,15 @@ const UploadForm: React.FC = () => {
       });
 
       setMessage('File uploaded successfully');
+      const uploadedId = response.data.id; // Assuming the response contains the ID
+      navigate(`/update/${uploadedId}`); // Redirect to the upload/id page
+      
       console.log(response.data); 
     } catch (error) {
       setMessage('Error uploading file');
-      console.error(error); 
+      console.error(error); // Use 'err' here as well
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -46,7 +57,9 @@ const UploadForm: React.FC = () => {
       <form onSubmit={handleSubmit}>
 
         <Input type="file" onChange={handleFileChange} />
-        <Button type="submit">Upload</Button>
+        <Button type="submit" disabled={loading}>
+          {loading ? 'Uploading...' : 'Upload'}
+        </Button>
       </form>
       {message && <p>{message}</p>}
     </div>

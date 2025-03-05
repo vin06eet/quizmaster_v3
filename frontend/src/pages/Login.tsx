@@ -20,7 +20,7 @@ function Login() {
       
       Cookies.set("token", response.data.token, {
         path: "/",
-        expires: 7, // 7 days
+        expires: 7, 
         secure: false,
         sameSite: "Strict",
       });

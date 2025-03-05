@@ -17,9 +17,14 @@ interface Quiz {
   title: string;
   description: string;
   questions: Question[];
+  timeLimit: number ; // Added timeLimit
+  marksPerQuestion: number ; // Added marksPerQuestion
 }
 
 const UpdateQuiz: React.FC = () => {
+  const [timeLimit, setTimeLimit] = useState<number | string>('');
+  const [marksPerQuestion, setMarksPerQuestion] = useState<number | string>('');
+  const [timeInputType, setTimeInputType] = useState<'total' | 'perQuestion'>('total'); // New state for time input type
   const { quizId } = useParams<{ quizId: string }>();
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [message, setMessage] = useState<string>('');
@@ -106,7 +111,21 @@ const UpdateQuiz: React.FC = () => {
     if (!quiz) return;
 
     try {
-      await axios.patch(`http://localhost:8080/api/quiz/${quizId}`, quiz, {
+      const updatedQuiz = { 
+        title: quiz.title,
+        description: quiz.description,
+        questions: quiz.questions.map((q, index) => ({
+          questionNumber: index + 1,
+          question: q.question,
+          options: q.options,
+          answer: q.answer,
+          marks: marksPerQuestion // Assuming marksPerQuestion is the same for all questions
+        })),
+        time: timeInputType === 'total' ? Number(timeLimit) : Number(timeLimit) * quiz.questions.length,
+        difficultyLevel: "Easy", // Default value, can be modified as needed
+        Public: true // Default value, can be modified as needed
+      };
+      await axios.patch(`http://localhost:8080/api/quiz/${quizId}`, updatedQuiz, {
         withCredentials: true,
       });
       setMessage('Quiz updated successfully!');
@@ -139,6 +158,53 @@ const UpdateQuiz: React.FC = () => {
               required
               className="w-full p-2 border rounded bg-white"
               rows={3}
+            />
+          </div>
+
+          {/* Time Input Type Toggle */}
+          <div>
+            <label className="block mb-2">Choose Time Input Type:</label>
+            <div>
+              <label>
+                <input
+                  type="radio"
+                  value="total"
+                  checked={timeInputType === 'total'}
+                  onChange={() => setTimeInputType('total')}
+                />
+                Total Time (in minutes)
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  value="perQuestion"
+                  checked={timeInputType === 'perQuestion'}
+                  onChange={() => setTimeInputType('perQuestion')}
+                />
+                Time Per Question (in minutes)
+              </label>
+            </div>
+          </div>
+
+          {/* Time Limit */}
+          <div>
+            <label className="block mb-2">Time Limit:</label>
+            <Input
+              type="number"
+              value={timeLimit}
+              onChange={(e) => setTimeLimit(e.target.value)}
+              required
+            />
+          </div>
+
+          {/* Marks Per Question */}
+          <div>
+            <label className="block mb-2">Marks Per Question:</label>
+            <Input
+              type="number"
+              value={marksPerQuestion}
+              onChange={(e) => setMarksPerQuestion(e.target.value)}
+              required
             />
           </div>
 

@@ -85,7 +85,6 @@ const TakeQuiz: React.FC = () => {
       { withCredentials: true }
     );
 
-
     setCurrentQuestionIndex(prev => Math.min(prev + 1, quizData!.questions.length - 1));
   };
 
@@ -144,7 +143,7 @@ const TakeQuiz: React.FC = () => {
           <div className="bg-white p-4 rounded-lg shadow">
             <h2 className="font-semibold mb-2">{quizData.questions[currentQuestionIndex].question}</h2>
             <div className="space-y-2">
-              {quizData.questions[currentQuestionIndex].options.map((option, i) => (
+              {quizData.questions[currentQuestionIndex].options.map((option:string, i:number) => (
                 <div key={i} className="flex items-center">
                   <input
                     type="radio"
