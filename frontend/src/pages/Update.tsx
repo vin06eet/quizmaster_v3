@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 interface Question {
   answer: string | number | readonly string[] | undefined;
@@ -17,18 +18,20 @@ interface Quiz {
   title: string;
   description: string;
   questions: Question[];
-  timeLimit: number ; // Added timeLimit
-  marksPerQuestion: number ; // Added marksPerQuestion
+  timeLimit: number ; 
+  marksPerQuestion: number ;
 }
 
 const UpdateQuiz: React.FC = () => {
   const [timeLimit, setTimeLimit] = useState<number | string>('');
   const [marksPerQuestion, setMarksPerQuestion] = useState<number | string>('');
-  const [timeInputType, setTimeInputType] = useState<'total' | 'perQuestion'>('total'); // New state for time input type
+  const [timeInputType, setTimeInputType] = useState<'total' | 'perQuestion'>('total');
   const { quizId } = useParams<{ quizId: string }>();
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [message, setMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -39,8 +42,7 @@ const UpdateQuiz: React.FC = () => {
           withCredentials: true,
         });
         const fetchedQuiz = response.data.quiz;
-        // Deep clone the quiz object
-        const clonedQuiz = JSON.parse(JSON.stringify(fetchedQuiz)) as Quiz;
+                const clonedQuiz = JSON.parse(JSON.stringify(fetchedQuiz)) as Quiz;
         setQuiz(clonedQuiz);
         setMessage('');
       } catch (error) {
@@ -51,24 +53,21 @@ const UpdateQuiz: React.FC = () => {
     };
 
     fetchQuiz();
-  }, [quizId]); // Runs when quizId changes
+  }, [quizId]); 
 
-  // Handle title change
-  const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (quiz) {
       setQuiz({ ...quiz, title: e.target.value });
     }
   };
 
-  // Handle description change
-  const handleDescriptionChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    const handleDescriptionChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     if (quiz) {
       setQuiz({ ...quiz, description: e.target.value });
     }
   };
 
-  // Handle question text change
-  const handleQuestionChange = (questionId: string, value: string) => {
+    const handleQuestionChange = (questionId: string, value: string) => {
     setQuiz((prevQuiz) => {
       if (!prevQuiz) return null;
       return {
@@ -80,8 +79,7 @@ const UpdateQuiz: React.FC = () => {
     });
   };
 
-  // Handle option change
-  const handleOptionChange = (questionId: string, optionIndex: number, value: string) => {
+    const handleOptionChange = (questionId: string, optionIndex: number, value: string) => {
     setQuiz((prevQuiz) => {
       if (!prevQuiz) return null;
       return {
@@ -95,8 +93,7 @@ const UpdateQuiz: React.FC = () => {
     });
   };
 
-  // Handle correct answer change
-  const handleCorrectAnswerChange = (questionId: string, value: string) => {
+    const handleCorrectAnswerChange = (questionId: string, value: string) => {
     if (quiz) {
       const updatedQuestions = quiz.questions.map((q) =>
         q._id === questionId ? { ...q, answer: value } : q
@@ -105,8 +102,7 @@ const UpdateQuiz: React.FC = () => {
     }
   };
 
-  // Handle form submission
-  const handleSubmit = async (e: FormEvent) => {
+   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!quiz) return;
 
@@ -119,26 +115,40 @@ const UpdateQuiz: React.FC = () => {
           question: q.question,
           options: q.options,
           answer: q.answer,
-          marks: marksPerQuestion // Assuming marksPerQuestion is the same for all questions
+          marks: marksPerQuestion 
         })),
         time: timeInputType === 'total' ? Number(timeLimit) : Number(timeLimit) * quiz.questions.length,
-        difficultyLevel: "Easy", // Default value, can be modified as needed
-        Public: true // Default value, can be modified as needed
+        difficultyLevel: "Easy", 
+        Public: true 
       };
       await axios.patch(`http://localhost:8080/api/quiz/${quizId}`, updatedQuiz, {
         withCredentials: true,
       });
       setMessage('Quiz updated successfully!');
+      setShowPopup(true);
+      
     } catch (error) {
       setMessage('Error updating quiz. Please try again.');
+      setShowPopup(true);
     }
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Update Quiz</h1>
-
-      {message && <p className="my-4 p-2 bg-green-100 text-green-700 rounded">{message}</p>}
+    <div className="min-h-screen bg-gradient-to-r from-indigo-500 to-purple-600 p-6 w-screen relative">
+      {showPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center backdrop-blur-md">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-md">
+            <p className="text-xl font-bold mb-4">{message}</p>
+            <Button onClick={() => {
+              setShowPopup(false)
+              navigate('/myQuizzes')
+            }} className="bg-indigo-500 w-1/3 py-2" >OK</Button>
+          </div>
+        </div>
+      )}
+      
+    <div className="p-6 max-w-4xl mx-auto bg-white rounded-lg">
+      <h1 className="text-3xl font-extrabold mb-6 text-center">Update Quiz</h1>
 
       {loading ? (
         <p>Loading...</p>
@@ -146,12 +156,12 @@ const UpdateQuiz: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Title and Description */}
           <div>
-            <label className="block mb-2">Title:</label>
+            <label className="text-xl block mb-2 font-bold">Title:</label>
             <Input type="text" value={quiz.title} onChange={handleTitleChange} required />
           </div>
 
           <div>
-            <label className="block mb-2">Description:</label>
+            <label className="text-xl block mb-2 font-bold">Description:</label>
             <textarea
               value={quiz.description}
               onChange={handleDescriptionChange}
@@ -163,8 +173,9 @@ const UpdateQuiz: React.FC = () => {
 
           {/* Time Input Type Toggle */}
           <div>
-            <label className="block mb-2">Choose Time Input Type:</label>
-            <div>
+            <label className="text-xl block mb-2 font-bold">Choose Type:</label>
+            <div className="flex-col">
+              <div>
               <label>
                 <input
                   type="radio"
@@ -174,6 +185,8 @@ const UpdateQuiz: React.FC = () => {
                 />
                 Total Time (in minutes)
               </label>
+              </div>
+              <div>
               <label>
                 <input
                   type="radio"
@@ -183,12 +196,14 @@ const UpdateQuiz: React.FC = () => {
                 />
                 Time Per Question (in minutes)
               </label>
+              </div>
+              
             </div>
           </div>
 
           {/* Time Limit */}
           <div>
-            <label className="block mb-2">Time Limit:</label>
+            <label className="text-xl block mb-2 font-bold">Time Limit:</label>
             <Input
               type="number"
               value={timeLimit}
@@ -199,7 +214,7 @@ const UpdateQuiz: React.FC = () => {
 
           {/* Marks Per Question */}
           <div>
-            <label className="block mb-2">Marks Per Question:</label>
+            <label className="text-xl block mb-2 font-bold">Marks Per Question:</label>
             <Input
               type="number"
               value={marksPerQuestion}
@@ -210,14 +225,14 @@ const UpdateQuiz: React.FC = () => {
 
           {/* Questions */}
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold">Questions</h2>
+            <h2 className="text-xl font-bold">Questions</h2>
             {quiz.questions.map((question, qIndex) => (
-              <div key={question._id} className="p-4 border rounded">
-                <h3 className="font-medium mb-2">Question {qIndex + 1}</h3>
+              <div key={question._id} className="p-4 border rounded-lg hover:shadow-2xl">
+                <h3 className="font-semibold mb-2">Question {qIndex + 1}</h3>
 
                 {/* Question Text */}
                 <div className="mb-4">
-                  <label className="block mb-2">Question Text:</label>
+                  <label className="font-semibold block mb-2">Question Text:</label>
                   <Input
                     type="text"
                     value={question.question}
@@ -228,7 +243,7 @@ const UpdateQuiz: React.FC = () => {
 
                 {/* Options */}
                 <div className="mb-4">
-                  <label className="block mb-2">Options:</label>
+                  <label className="font-semibold block mb-2">Options:</label>
                   {question.options.map((option, oIndex) => (
                     <div key={oIndex} className="mb-2">
                       <Input
@@ -244,7 +259,7 @@ const UpdateQuiz: React.FC = () => {
 
                 {/* Correct Answer */}
                 <div>
-                  <label className="block mb-2">Correct Answer:</label>
+                  <label className="font-semibold block mb-2">Correct Answer:</label>
                   <select
                     value={question.answer}
                     onChange={(e) => handleCorrectAnswerChange(question._id, e.target.value)}
@@ -261,14 +276,17 @@ const UpdateQuiz: React.FC = () => {
               </div>
             ))}
           </div>
-
-          <Button type="submit" className="w-full">
+            <div className='flex justify-center'>
+            <Button type="submit" className=" bg-indigo-500 w-1/3 h-11 font-extrabold ">
             Update Quiz
           </Button>
+            </div>
+          
         </form>
       ) : (
         <p>No quiz found.</p>
       )}
+    </div>
     </div>
   );
 };

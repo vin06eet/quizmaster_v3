@@ -412,6 +412,26 @@ const getMyQuizzes = async (req, res) => {
     }
 };
 
+const attemptPerformance = async (req, res)=>{
+    try {
+        const userID = req.user._id
+        const attemptID = req.params.id
+        if (!mongoose.Types.ObjectId.isValid(userID))
+            return res.status(400).json({ error: 'Invalid user ID' })
+        if (!mongoose.Types.ObjectId.isValid(attemptID))
+            return res.status(400).json({ error: 'Invalid attempt ID' })
+        const attempt = await Attempt.findById(attemptID)
+        if (!attempt)
+            return res.status(404).json({ error: 'Attempt not found' })
+        const user = await User.findById(userID)
+        if (!user)
+            return res.status(404).json({ error: 'User not found' })
+        return res.status(200).json({attempt})
+
+    } catch (error) {
+        res.status(500).json({ error: error.message})
+    }
+}
 
 export {
     getAllQuizzes,
@@ -427,6 +447,7 @@ export {
     saveQuestion,
     saveQuizAttempt,
     createAttempt,
-    getMyQuizzes
+    getMyQuizzes,
+    attemptPerformance
 }
 

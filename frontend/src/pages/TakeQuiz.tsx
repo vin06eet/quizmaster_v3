@@ -14,172 +14,125 @@ const TakeQuiz: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showTnc, setShowTnc] = useState(true);
   const [score, setScore] = useState<number | null>(null);
-  const [timeLeft, setTimeLeft] = useState<number>(0); // Initialize timeLeft to 0
+  const [timeLeft, setTimeLeft] = useState<number>(0);
 
   useEffect(() => {
     if (!showTnc) return;
-
     const createQuizAttempt = async () => {
       try {
-        const response = await axios.post(
-          `http://localhost:8080/api/quiz/attempt/create/${quizId}`,
-          {},
-          { withCredentials: true }
-        );
-
+        const response = await axios.post(`http://localhost:8080/api/quiz/attempt/create/${quizId}`, {}, { withCredentials: true });
         if (response.data?.createdAttempt) {
           setAttemptId(response.data.createdAttempt._id);
           setQuizData(response.data.createdAttempt);
-          setTimeLeft(response.data.time || 240); // Ensure timeLeft is set to 0 if undefined
-        }
-        if (response.data?.time) {
-          setTimeLeft(response.data.time); 
+          setTimeLeft(response.data.time || 240);
         }
       } catch (err: any) {
         setError(err.response?.status === 401 ? 'Please login to take this quiz' : 'Failed to load quiz');
-        console.error(err);
       } finally {
         setLoading(false);
       }
     };
-
     createQuizAttempt();
   }, [quizId, showTnc]);
 
   useEffect(() => {
     if (timeLeft === null || timeLeft <= 0) return;
-
-    const timer = setInterval(() => {
-      setTimeLeft(prev => (prev > 0 ? prev - 1 : 0)); // Ensure it never goes below 0
-    }, 1000);
-
+    const timer = setInterval(() => setTimeLeft(prev => (prev > 0 ? prev - 1 : 0)), 1000);
     return () => clearInterval(timer);
   }, [timeLeft]);
 
   useEffect(() => {
-    if (timeLeft === 0) {
-      handleFinish();
-    }
+    if (timeLeft === 0) handleFinish();
   }, [timeLeft]);
 
-  const handleAcceptTnc = () => {
-    setShowTnc(false);
-  };
-
+  const handleAcceptTnc = () => setShowTnc(false);
   const handleSelect = (option: string) => {
     setSelectedOptions(prev => ({
       ...prev,
-      [currentQuestionIndex]: prev[currentQuestionIndex] === option ? null : option, // Allow unselecting
+      [currentQuestionIndex]: prev[currentQuestionIndex] === option ? null : option,
     }));
   };
 
   const handleSaveAndNext = async () => {
     if (!attemptId) return;
-    const answer = selectedOptions[currentQuestionIndex] || null; // Allow proceeding without selection
-    await axios.patch(
-      `http://localhost:8080/api/quiz/attempt/save/question/${attemptId}`,
-      {
-        questionNumber: currentQuestionIndex + 1,
-        answer: answer,
-      },
-      { withCredentials: true }
-    );
-
+    await axios.patch(`http://localhost:8080/api/quiz/attempt/save/question/${attemptId}`, {
+      questionNumber: currentQuestionIndex + 1,
+      answer: selectedOptions[currentQuestionIndex] || null,
+    }, { withCredentials: true });
     setCurrentQuestionIndex(prev => Math.min(prev + 1, quizData!.questions.length - 1));
   };
 
   const handleFinish = async () => {
     if (!attemptId) return;
-
     try {
-      const response = await axios.patch(
-        `http://localhost:8080/api/quiz/attempt/save/${attemptId}`,
-        { parentQuizId: quizId },
-        { withCredentials: true }
-      );
-
-      if (response.data?.totalMarks !== undefined) {
-        setScore(response.data.totalMarks);
-      }
+      const response = await axios.patch(`http://localhost:8080/api/quiz/attempt/save/${attemptId}`, { parentQuizId: quizId }, { withCredentials: true });
+      if (response.data?.totalMarks !== undefined) setScore(response.data.totalMarks);
     } catch (err) {
       console.error('Error fetching final marks', err);
     }
   };
 
-  const handlePrevious = () => {
-    setCurrentQuestionIndex(prev => Math.max(prev - 1, 0));
-  };
-
-  const handleClosePopup = () => {
-    setScore(null);
-    navigate('/landing');
-  };
-
-  if (loading) return <div>Loading quiz...</div>;
-  if (error) return <div>{error}</div>;
-  if (!quizData) return <div>No quiz data available</div>;
+  if (loading) return <div className="w-screen flex justify-center items-center h-screen text-xl font-semibold">Loading quiz...</div>;
+  if (error) return <div className="w-screen text-center text-red-500 mt-6">{error}</div>;
+  if (!quizData) return <div className="w-screen text-center text-gray-600 mt-6">No quiz data available</div>;
 
   return (
-    <div className="p-4">
-      {showTnc && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <h2 className="text-xl font-bold mb-4">Terms and Conditions</h2>
-            <p className="mb-4">
-              Before you begin, please read and accept the terms and conditions for this quiz.
-            </p>
-            <Button onClick={handleAcceptTnc}>Accept & Start Quiz</Button>
+    <div className=" w-screen">
+    <div className="flex justify-center items-center h-screen">
+    <div className="max-w-3xl mx-auto p-6 bg-gray-100 shadow-lg rounded-lg">
+      {showTnc ? (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl text-center w-96">
+            <h2 className="text-2xl font-bold mb-4">Terms & Conditions</h2>
+            <p className="text-gray-700 mb-4">Please read and accept the terms and conditions to start.</p>
+            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={handleAcceptTnc}>Accept & Start Quiz</Button>
           </div>
         </div>
-      )}
-
-      {!showTnc && (
+      ) : (
         <>
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold">{quizData.title}</h1>
-            <div className="text-red-500 font-bold">Time Left: {Math.floor(timeLeft / 60)}:{timeLeft % 60 < 10 ? '0' : ''}{timeLeft % 60}</div>
+            <h1 className="text-3xl font-bold text-blue-700">{quizData.title}</h1>
+            <div className="text-red-500 font-semibold">Time Left: {Math.floor(timeLeft / 60)}:{timeLeft % 60 < 10 ? '0' : ''}{timeLeft % 60}</div>
           </div>
-          {quizData.description && <p className="mb-4">{quizData.description}</p>}
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h2 className="font-semibold mb-2">{quizData.questions[currentQuestionIndex].question}</h2>
-            <div className="space-y-2">
-              {quizData.questions[currentQuestionIndex].options.map((option:string, i:number) => (
-                <div key={i} className="flex items-center">
+          <div className="bg-white p-4 rounded-lg shadow-lg">
+            <h2 className="text-lg font-semibold mb-3">{quizData.questions[currentQuestionIndex].question}</h2>
+            <div className="space-y-3">
+              {quizData.questions[currentQuestionIndex].options.map((option: string, i: number) => (
+                  <label key={i} className={`block p-3 border rounded-lg cursor-pointer ${selectedOptions[currentQuestionIndex] === option ? 'bg-blue-100' : 'hover:bg-blue-50'}`}>
+
                   <input
                     type="radio"
-                    id={`question-${currentQuestionIndex}-option-${i}`}
                     name={`question-${currentQuestionIndex}`}
                     value={option}
                     checked={selectedOptions[currentQuestionIndex] === option}
                     onChange={() => handleSelect(option)}
-                    className="mr-2"
+                    className="hidden"
                   />
-                  <label htmlFor={`question-${currentQuestionIndex}-option-${i}`}>{option}</label>
-                </div>
+                  {option}
+                </label>
               ))}
             </div>
           </div>
           <div className="mt-6 flex justify-between">
-            <Button onClick={handlePrevious} disabled={currentQuestionIndex === 0}>Previous</Button>
+            <Button className="bg-gray-500 hover:bg-gray-600 text-white" onClick={() => setCurrentQuestionIndex(prev => Math.max(prev - 1, 0))} disabled={currentQuestionIndex === 0}>Previous</Button>
             {currentQuestionIndex < quizData.questions.length - 1 ? (
-              <Button onClick={handleSaveAndNext}>Save & Next</Button>
-             ) : ( 
-              <br />
-            )}
-            <Button onClick={handleFinish}>Finish</Button>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={handleSaveAndNext}>Save & Next</Button>
+            ) : null}
+            <Button className="bg-green-600 hover:bg-green-700 text-white" onClick={handleFinish}>Finish</Button>
           </div>
         </>
       )}
-
       {score !== null && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <h2 className="text-xl font-bold mb-4">Quiz Completed!</h2>
-            <p className="text-lg">You scored: <strong>{score} marks</strong></p>
-            <Button onClick={handleClosePopup}>Close</Button>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl text-center">
+            <h2 className="text-2xl font-bold mb-4">Quiz Completed!</h2>
+            <p className="text-lg">You scored: <span className="font-bold text-green-600">{score} marks</span></p>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white mt-4" onClick={() => navigate('/landing')}>Close</Button>
           </div>
         </div>
       )}
+    </div>
+    </div>
     </div>
   );
 };

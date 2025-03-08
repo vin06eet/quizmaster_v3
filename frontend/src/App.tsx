@@ -8,6 +8,7 @@ import { DataDisplayPage } from "./pages/Browse";
 import { UpdateQuiz } from './pages/Update'
 import { TakeQuiz } from "./pages/TakeQuiz";
 import MyQuizzes from "./pages/myQuizzes";
+import { AttemptPerformance } from "./pages/AttemptPerformance";
 
 function Home(){
   return (
@@ -38,6 +39,7 @@ function App() {
         <Route path="/update/:quizId" element={<UpdateQuiz/>} />
         <Route path="/take/:quizId" element={<TakeQuiz/>} />
         <Route path="/myQuizzes" element={<MyQuizzes/>}/>
+        <Route path="/performance/:quizId" element={<AttemptPerformance/>}></Route>
       </Routes>
     </Router>
   );
