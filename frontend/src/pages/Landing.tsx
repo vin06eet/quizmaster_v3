@@ -1,8 +1,24 @@
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 function Landing() {
-    return (
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/islogged', { withCredentials: true });
+                setIsLoggedIn(response.data.isTrue); 
+            } catch (error) {
+                console.error("Error checking login status:", error);
+            }
+        };
+        checkLoginStatus();
+    }, []);
+
+    return ( 
         <div className="relative w-screen h-screen flex flex-col text-white overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black">
             {/* Navigation Bar */}
             <div className="relative flex justify-between items-center bg-opacity-50 backdrop-blur-md px-6 py-4 shadow-lg border-b border-gray-700">
@@ -32,9 +48,24 @@ function Landing() {
                     </Link>
                 </div>
                 <div className="p-1">
-                    <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg transition-all duration-300 ease-in-out">
-                        Profile
-                    </Button>
+                    {isLoggedIn ? (
+                        <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg transition-all duration-300 ease-in-out">
+                            Profile
+                        </Button>
+                    ) : (
+                        <>
+                            <Link to="/login">
+                                <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg transition-all duration-300 ease-in-out">
+                                    Login
+                                </Button>
+                            </Link>
+                            <Link to="/register">
+                                <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg transition-all duration-300 ease-in-out">
+                                    Register
+                                </Button>
+                            </Link>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -54,7 +85,6 @@ function Landing() {
                     </Link>
                 </div>
                 <div className="hidden sm:block w-1/5 opacity-50 m-2 rounded-lg  bg-transparent border">
-                    
                 </div>
             </div> 
         </div>

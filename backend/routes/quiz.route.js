@@ -15,7 +15,8 @@ import {
     saveQuizAttempt,
     createAttempt,
     getMyQuizzes,
-    attemptPerformance
+    attemptPerformance,
+    updateFinalMarks
 } from '../controllers/quiz.controller.js'
 
 const router = express.Router()
@@ -35,5 +36,6 @@ router.patch('/quiz/attempt/save/:id', authenticate, saveQuizAttempt) //works fi
 router.post('/quiz/attempt/create/:id', authenticate, createAttempt) // works but doesnot terminate in postman
 router.get('/myQuizzes', authenticate, getMyQuizzes)
 router.get('/quiz/attempt/performance/:id', authenticate, attemptPerformance)
+router.patch('quiz/attempt/final/:id', authenticate, updateFinalMarks)
 
 export default router

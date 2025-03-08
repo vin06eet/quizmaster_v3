@@ -414,8 +414,24 @@ const getMyQuizzes = async (req, res) => {
 
 const attemptPerformance = async (req, res)=>{
     try {
-        const userID = req.user._id
         const attemptID = req.params.id
+        if (!mongoose.Types.ObjectId.isValid(attemptID))
+            return res.status(400).json({ error: 'Invalid attempt ID' })
+        const attempt = await Attempt.findById(attemptID)
+        if (!attempt)
+            return res.status(404).json({ error: 'Attempt not found' })
+        return res.status(200).json({attempt})
+
+    } catch (error) {
+        res.status(500).json({ error: error.message})
+    }
+}
+
+const updateFinalMarks = async (req, res)=>{
+    try {
+        const attemptID = req.params.id
+        const userID = req.user._id
+        const finalScore = req.body
         if (!mongoose.Types.ObjectId.isValid(userID))
             return res.status(400).json({ error: 'Invalid user ID' })
         if (!mongoose.Types.ObjectId.isValid(attemptID))
@@ -423,13 +439,11 @@ const attemptPerformance = async (req, res)=>{
         const attempt = await Attempt.findById(attemptID)
         if (!attempt)
             return res.status(404).json({ error: 'Attempt not found' })
-        const user = await User.findById(userID)
-        if (!user)
-            return res.status(404).json({ error: 'User not found' })
-        return res.status(200).json({attempt})
-
+        attempt.totalMarks = finalScore
+        await attempt.save()
+        res.status(200).json({message: "Marks saved successfully"})
     } catch (error) {
-        res.status(500).json({ error: error.message})
+        res.status(500).json({error: error.message})
     }
 }
 
@@ -448,6 +462,7 @@ export {
     saveQuizAttempt,
     createAttempt,
     getMyQuizzes,
-    attemptPerformance
+    attemptPerformance,
+    updateFinalMarks
 }
 

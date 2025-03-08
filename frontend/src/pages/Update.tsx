@@ -24,6 +24,7 @@ interface Quiz {
 
 const UpdateQuiz: React.FC = () => {
   const [timeLimit, setTimeLimit] = useState<number | string>('');
+  const [isPublic, setVisibility] = useState<boolean>(true);
   const [marksPerQuestion, setMarksPerQuestion] = useState<number | string>('');
   const [timeInputType, setTimeInputType] = useState<'total' | 'perQuestion'>('total');
   const { quizId } = useParams<{ quizId: string }>();
@@ -66,7 +67,7 @@ const UpdateQuiz: React.FC = () => {
       setQuiz({ ...quiz, description: e.target.value });
     }
   };
-
+  
     const handleQuestionChange = (questionId: string, value: string) => {
     setQuiz((prevQuiz) => {
       if (!prevQuiz) return null;
@@ -101,6 +102,8 @@ const UpdateQuiz: React.FC = () => {
       setQuiz({ ...quiz, questions: updatedQuestions });
     }
   };
+
+  
 
    const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -154,6 +157,33 @@ const UpdateQuiz: React.FC = () => {
         <p>Loading...</p>
       ) : quiz ? (
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="text-xl block mb-2 font-bold">Visibility:</label>
+            <div className="flex-col">
+              <div>
+              <label>
+                <input
+                  type="radio"
+                  value="total"
+                  checked = {isPublic===true}
+                  onChange={() => setVisibility(true)}
+                />
+                Public
+              </label>
+              </div>
+              <div>
+              <label>
+                <input
+                  type="radio"
+                  value="perQuestion"
+                  checked = {isPublic===false}
+                  onChange={() => setVisibility(false)}
+                />
+                Private
+              </label>
+              </div>
+            </div>
+          </div>
           {/* Title and Description */}
           <div>
             <label className="text-xl block mb-2 font-bold">Title:</label>
@@ -197,7 +227,6 @@ const UpdateQuiz: React.FC = () => {
                 Time Per Question (in minutes)
               </label>
               </div>
-              
             </div>
           </div>
 
@@ -205,9 +234,14 @@ const UpdateQuiz: React.FC = () => {
           <div>
             <label className="text-xl block mb-2 font-bold">Time Limit:</label>
             <Input
-              type="number"
+              type="text"  // Change from "number" to "text"
               value={timeLimit}
-              onChange={(e) => setTimeLimit(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d*$/.test(value)) { // Allow only digits
+                  setTimeLimit(value);
+                }
+              }}
               required
             />
           </div>
@@ -216,9 +250,14 @@ const UpdateQuiz: React.FC = () => {
           <div>
             <label className="text-xl block mb-2 font-bold">Marks Per Question:</label>
             <Input
-              type="number"
+              type="text"  // Change from "number" to "text"
               value={marksPerQuestion}
-              onChange={(e) => setMarksPerQuestion(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d*$/.test(value)) { // Allow only digits
+                  setMarksPerQuestion(value);
+                }
+              }}
               required
             />
           </div>

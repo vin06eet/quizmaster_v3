@@ -79,8 +79,21 @@ const logout = async (req, res) => {
     }
 }
 
+const isLoggedIn = async (req, res)=>{
+    try {
+        userId = req.user._id
+        const user = await User.findById(userId)
+        if(!user)
+            return res.status(400).json({istrue: false})
+        return true
+    } catch (error) {
+        res.status(500).json({istrue: false})
+    }
+}
+
 export {
     register,
     login,
-    logout
+    logout,
+    isLoggedIn
 }

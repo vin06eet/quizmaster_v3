@@ -47,49 +47,6 @@ const quizSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
-    // attempts: [{
-    //     title: {
-    //         type: String,
-    //         required: true
-    //     },
-    //     description: {
-    //         type: String
-    //     },
-    //     questions: [{
-    //         question: {
-    //             type: mongoose.Schema.Types.String,
-    //             ref: 'Quiz'
-    //         },
-    //         options: [{
-    //             type: mongoose.Schema.Types.String,
-    //             ref: 'Quiz'
-    //         }],
-    //         // Check this part
-    //         answer: {
-    //             type: mongoose.Schema.Types.String,
-    //             ref: 'Quiz'
-    //         },
-    //         markedOption: {
-    //             type: String
-    //         },
-    //         isCorrect: {
-    //             type: Boolean,
-    //             default: false
-    //         },
-    //         score: {
-    //             type: Number,
-    //             default: 0
-    //         }
-    //     }],
-    //     timeTaken: {
-    //         type: Number,
-    //         default: 0
-    //     },
-    //     totalMarks: {
-    //         type: Number,
-    //         default: 0
-    //     }
-    // }],
     attempts: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Attempt'

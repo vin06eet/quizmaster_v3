@@ -64,6 +64,10 @@ const TakeQuiz: React.FC = () => {
 
   const handleFinish = async () => {
     if (!attemptId) return;
+    await axios.patch(`http://localhost:8080/api/quiz/attempt/save/question/${attemptId}`, {
+      questionNumber: currentQuestionIndex + 1,
+      answer: selectedOptions[currentQuestionIndex] || null,
+    }, { withCredentials: true });
     try {
       const response = await axios.patch(`http://localhost:8080/api/quiz/attempt/save/${attemptId}`, { parentQuizId: quizId }, { withCredentials: true });
       if (response.data?.totalMarks !== undefined) setScore(response.data.totalMarks);
@@ -126,8 +130,7 @@ const TakeQuiz: React.FC = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-xl text-center">
             <h2 className="text-2xl font-bold mb-4">Quiz Completed!</h2>
-            <p className="text-lg">You scored: <span className="font-bold text-green-600">{score} marks</span></p>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white mt-4" onClick={() => navigate('/landing')}>Close</Button>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white mt-4" onClick={() => navigate(`/performance/${attemptId}`)}>Proceed </Button>
           </div>
         </div>
       )}
