@@ -63,6 +63,13 @@ const DataDisplayPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-indigo-500 to-purple-600 p-6 w-screen">
+      <button 
+      onClick={() => navigate("/Landing")} 
+      className="fixed top-4 right-4 bg-teal-500 text-black px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition z-50"
+    >
+      Home
+    </button>
+      
       <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-lg p-6">
         <h1 className="text-3xl font-bold text-gray-800 text-center mb-6">
           Available Quizzes
@@ -87,6 +94,7 @@ const DataDisplayPage: React.FC = () => {
               ) || 0;
 
               return (
+                
                 <li
                   key={item._id}
                   className="p-5 border rounded-xl shadow-md bg-gray-50 transition-transform transform hover:scale-105 hover:shadow-lg"

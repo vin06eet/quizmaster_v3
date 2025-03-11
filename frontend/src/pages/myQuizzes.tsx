@@ -65,6 +65,12 @@ const MyQuizzes: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-indigo-500 to-purple-600 p-6 w-screen">
+      <button 
+      onClick={() => navigate("/Landing")} 
+      className="fixed top-4 right-4 bg-teal-500 text-black px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition z-50"
+    >
+      Home
+    </button>
       <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-lg p-6">
         <h1 className="text-3xl font-bold text-gray-800 text-center mb-6">My Quizzes</h1>
 
@@ -84,14 +90,14 @@ const MyQuizzes: React.FC = () => {
                 >
                   <h3 className="text-xl font-semibold text-gray-900">{index+1}. {quiz.title}</h3>
                   <p className="text-gray-700 mt-2">{quiz.description}</p>
-                  <div className="mt-4 flex gap-3">
-                    <Button variant="default" className="bg-green-500" onClick={() => handleTakeQuiz(quiz._id)}>
+                  <div className="mt-4 [@media(min-width:450px)]:flex-row flex-col flex gap-3 items-center">
+                    <Button variant="default" className="bg-green-500 w-24" onClick={() => handleTakeQuiz(quiz._id)}>
                       Take Quiz
                     </Button>
-                    <Button variant="default" className="bg-indigo-500 text-white" onClick={() => handleUpdateQuiz(quiz._id)}>
+                    <Button variant="default" className="bg-indigo-500 text-white w-24" onClick={() => handleUpdateQuiz(quiz._id)}>
                       Update Quiz
                     </Button>
-                    <Button variant="destructive" className="bg-red-500" onClick={() => handleDeleteQuiz(quiz._id)}>
+                    <Button variant="destructive" className="bg-red-500 w-24" onClick={() => handleDeleteQuiz(quiz._id)}>
                       Delete
                     </Button>
                   </div>
