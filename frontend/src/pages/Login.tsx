@@ -33,8 +33,8 @@ function Login() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center w-screen h-screen bg-gray-100">
-      <div className="flex flex-col justify-center items-center sm:w-1/3 sm:h-1/2 h-64 bg-gray-400 rounded-lg shadow-2xl">
+    <div className="flex flex-col justify-center items-center w-screen h-screen bg-gradient-to-r from-indigo-500 to-purple-600">
+      <div className="flex flex-col justify-center items-center sm:w-1/3 sm:h-1/2 h-64 bg-white rounded-lg shadow-2xl">
         <h1 className="text-2xl font-bold mb-4">Login</h1>
         <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center p-4">
           <Input
