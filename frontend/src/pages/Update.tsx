@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
+import React, { useState, ChangeEvent, FormEvent, useEffect, ChangeEventHandler } from 'react';
 import axios from 'axios';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -11,6 +11,7 @@ interface Question {
   question: string;
   options: string[];
   correctAnswer: string;
+  marks?: number;
 }
 
 interface Quiz {
@@ -20,11 +21,13 @@ interface Quiz {
   questions: Question[];
   timeLimit: number ; 
   marksPerQuestion: number ;
+  difficultyLevel: string
 }
 
 const UpdateQuiz: React.FC = () => {
   const [timeLimit, setTimeLimit] = useState<number | string>('');
   const [isPublic, setVisibility] = useState<boolean>(true);
+  const [applySameMarks, setApplySameMarks] = useState<boolean>(true);
   const [marksPerQuestion, setMarksPerQuestion] = useState<number | string>('');
   const [timeInputType, setTimeInputType] = useState<'total' | 'perQuestion'>('total');
   const { quizId } = useParams<{ quizId: string }>();
@@ -60,6 +63,32 @@ const UpdateQuiz: React.FC = () => {
     if (quiz) {
       setQuiz({ ...quiz, title: e.target.value });
     }
+  };
+
+  const handleDifficultyLevel: ChangeEventHandler<HTMLSelectElement> = (e) => {
+    if (quiz) {
+      setQuiz({ ...quiz, difficultyLevel: e.target.value });
+    }
+  };
+  
+
+  const handleMarksChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setMarksPerQuestion(value);
+    }
+  };
+
+  const handleQuestionMarksChange = (questionId: string, value: string) => {
+    setQuiz((prevQuiz) => {
+      if (!prevQuiz) return null;
+      return {
+        ...prevQuiz,
+        questions: prevQuiz.questions.map((q) =>
+          q._id === questionId ? { ...q, marks: Number(value) } : q
+        ),
+      };
+    });
   };
 
     const handleDescriptionChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -118,10 +147,10 @@ const UpdateQuiz: React.FC = () => {
           question: q.question,
           options: q.options,
           answer: q.answer,
-          marks: marksPerQuestion 
+          marks: applySameMarks ? Number(marksPerQuestion) : q.marks || 5
         })),
         time: timeInputType === 'total' ? Number(timeLimit) : Number(timeLimit) * quiz.questions.length,
-        difficultyLevel: "Easy", 
+        difficultyLevel: quiz.difficultyLevel, 
         Public: isPublic
       };
       await axios.patch(`http://localhost:8080/api/quiz/${quizId}`, updatedQuiz, {
@@ -184,6 +213,22 @@ const UpdateQuiz: React.FC = () => {
               </div>
             </div>
           </div>
+
+          <div>
+            <label className="text-xl block mb-2 font-bold" htmlFor="difficulty">Difficulty:</label>
+              <select 
+                id="difficulty" 
+                className="border border-gray-300 rounded-md p-2 w-full bg-white" 
+                onChange={handleDifficultyLevel} 
+                defaultValue={"Easy"}
+                >
+                  <option value="Easy">Easy</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Hard">Hard</option>
+              </select>
+          </div>
+
+
           {/* Title and Description */}
           <div>
             <label className="text-xl block mb-2 font-bold">Title:</label>
@@ -246,21 +291,38 @@ const UpdateQuiz: React.FC = () => {
             />
           </div>
 
-          {/* Marks Per Question */}
+          {/* Marks Selection */}
           <div>
-            <label className="text-xl block mb-2 font-bold">Marks Per Question:</label>
-            <Input
-              type="text"  // Change from "number" to "text"
-              value={marksPerQuestion}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (/^\d*$/.test(value)) { // Allow only digits
-                  setMarksPerQuestion(value);
-                }
-              }}
-              required
-            />
-          </div>
+              <label className="text-xl block mb-2 font-bold">Marks Assignment:</label>
+              <div className="flex gap-4">
+                <label>
+                  <input
+                    type="radio"
+                    value="same"
+                    checked={applySameMarks}
+                    onChange={() => setApplySameMarks(true)}
+                  />
+                  Same Marks for All Questions
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    value="different"
+                    checked={!applySameMarks}
+                    onChange={() => setApplySameMarks(false)}
+                  />
+                  Different Marks Per Question
+                </label>
+              </div>
+            </div>
+
+            {/* Single Marks Input */}
+            {applySameMarks && (
+              <div>
+                <label className="text-xl block mb-2 font-bold">Marks Per Question:</label>
+                <Input type="text" value={marksPerQuestion} onChange={handleMarksChange} required />
+              </div>
+            )}
 
           {/* Questions */}
           <div className="space-y-6">
@@ -312,6 +374,19 @@ const UpdateQuiz: React.FC = () => {
                     ))}
                   </select>
                 </div>
+
+                {/* Marks Per Question (if applicable) */}
+                {!applySameMarks && (
+                    <div className="mt-4">
+                      <label className="font-semibold block mb-2">Marks:</label>
+                      <Input
+                        type="text"
+                        value={question.marks || '5'}
+                        onChange={(e) => handleQuestionMarksChange(question._id, e.target.value)}
+                        required
+                      />
+                    </div>
+                  )}
               </div>
             ))}
           </div>
