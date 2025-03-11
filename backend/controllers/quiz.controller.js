@@ -316,7 +316,7 @@ const createAttempt = async (req, res)=>{
 
         user.quizzesAttempted.push(createdAttempt._id)
         await user.save()
-        res.status(200).json({createdAttempt})
+        res.status(200).json({createdAttempt, time: quiz.time})
     } catch (error) {
         res.status(500).json({error: error.message})
     }
@@ -357,7 +357,7 @@ const saveQuestion = async (req, res)=>{
 const saveQuizAttempt = async (req, res)=>{
     try {
         const quizID = req.params.id
-        const {parentQuizId} = req.body
+        const {parentQuizId, timeLeft} = req.body
         if (!mongoose.Types.ObjectId.isValid(quizID) || !mongoose.Types.ObjectId.isValid(parentQuizId))
             return res.status(400).json({ error: 'Invalid quiz ID or parent Quiz ID' });
         const attempt = await Attempt.findById(quizID)
@@ -388,6 +388,8 @@ const saveQuizAttempt = async (req, res)=>{
             totalMarks += question.score; 
         });
         attempt.totalMarks = totalMarks;
+        const timeTaken = Quiz.time - timeLeft
+        attempt.timeTaken = timeTaken
         await attempt.save()
         res.status(200).json({
             message: 'Total marks calculated and updated successfully',

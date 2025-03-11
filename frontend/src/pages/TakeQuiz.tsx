@@ -24,7 +24,7 @@ const TakeQuiz: React.FC = () => {
         if (response.data?.createdAttempt) {
           setAttemptId(response.data.createdAttempt._id);
           setQuizData(response.data.createdAttempt);
-          setTimeLeft(response.data.time || 240);
+          setTimeLeft(response.data.time * 60);
         }
       } catch (err: any) {
         setError(err.response?.status === 401 ? 'Please login to take this quiz' : 'Failed to load quiz');
@@ -69,7 +69,7 @@ const TakeQuiz: React.FC = () => {
       answer: selectedOptions[currentQuestionIndex] || null,
     }, { withCredentials: true });
     try {
-      const response = await axios.patch(`http://localhost:8080/api/quiz/attempt/save/${attemptId}`, { parentQuizId: quizId }, { withCredentials: true });
+      const response = await axios.patch(`http://localhost:8080/api/quiz/attempt/save/${attemptId}`, { parentQuizId: quizId , timeLeft: timeLeft }, { withCredentials: true });
       if (response.data?.totalMarks !== undefined) setScore(response.data.totalMarks);
     } catch (err) {
       console.error('Error fetching final marks', err);
@@ -94,9 +94,9 @@ const TakeQuiz: React.FC = () => {
         </div>
       ) : (
         <>
+        <div className="text-red-500 font-semibold">Time Left: {Math.floor(timeLeft / 60)}:{timeLeft % 60 < 10 ? '0' : ''}{timeLeft % 60}</div>
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-3xl font-bold text-blue-700">{quizData.title}</h1>
-            <div className="text-red-500 font-semibold">Time Left: {Math.floor(timeLeft / 60)}:{timeLeft % 60 < 10 ? '0' : ''}{timeLeft % 60}</div>
           </div>
           <div className="bg-white p-4 rounded-lg shadow-lg">
             <h2 className="text-lg font-semibold mb-3">{quizData.questions[currentQuestionIndex].question}</h2>

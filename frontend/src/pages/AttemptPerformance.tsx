@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface Question {
   questionNumber: string;
@@ -32,6 +34,7 @@ const AttemptPerformance = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedQuestion, setExpandedQuestion] = useState<string | null>(null);
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchPerformanceDetails = async () => {
@@ -108,6 +111,9 @@ const AttemptPerformance = () => {
       <div className="mt-6 text-lg font-semibold">
         <p>Total Score: {performanceDetails.attempt.totalMarks}</p>
         <p>Time Taken: {performanceDetails.attempt.timeTaken} seconds</p>
+      </div>
+      <div className="flex justify-center">
+      <Button className="bg-green-500 text-black hover:text-white" onClick={()=>navigate('/landing')}>Proceed</Button>
       </div>
     </div>
     </div>

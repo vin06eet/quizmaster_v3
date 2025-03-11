@@ -81,11 +81,11 @@ const logout = async (req, res) => {
 
 const isLoggedIn = async (req, res)=>{
     try {
-        userId = req.user._id
+        const userId = req.user._id
         const user = await User.findById(userId)
         if(!user)
-            return res.status(400).json({istrue: false})
-        return true
+            return frames.status(400).json({final: false})
+        res.status(200).json({final: true})
     } catch (error) {
         res.status(500).json({istrue: false})
     }

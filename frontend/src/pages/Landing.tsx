@@ -5,12 +5,13 @@ import axios from "axios";
 
 function Landing() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+   
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
                 const response = await axios.get('http://localhost:8080/api/islogged', { withCredentials: true });
-                setIsLoggedIn(response.data.isTrue); 
+                setIsLoggedIn(response.data.final); 
             } catch (error) {
                 console.error("Error checking login status:", error);
             }
@@ -23,44 +24,72 @@ function Landing() {
             {/* Navigation Bar */}
             <div className="relative flex justify-between items-center bg-opacity-50 backdrop-blur-md px-6 py-4 shadow-lg border-b border-gray-700">
                 <div className="p-1 sm:hidden">
-                    <Button className="menu bg-transparent hover:bg-gray-700 border border-gray-500 text-white transition-all duration-300 ease-in-out">
+                    <Button
+                        className="menu bg-transparent hover:bg-gray-700 border border-gray-500 text-white transition-all duration-300 ease-in-out"
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    >
                         Menu
                     </Button>
+
+                    {/* Dropdown Menu */}
+                    {isMenuOpen && (
+                        <div className="absolute top-full left-0 w-48 mt-2 bg-gray-800 border border-gray-700 shadow-lg flex flex-col z-50 rounded-lg">
+                            <Link to="/upload">
+                                <Button className="w-full bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 text-left">
+                                    Upload
+                                </Button>
+                            </Link>
+                            <Link to="/browse">
+                                <Button className="w-full bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 text-left">
+                                    Browse
+                                </Button>
+                            </Link>
+                            <Link to="/myQuizzes">
+                                <Button className="w-full bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 text-left">
+                                    My Quizzes
+                                </Button>
+                            </Link>
+                        </div>
+                    )}
                 </div>
+
                 <div className="hidden sm:flex space-x-6">
-                    <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg transition-all duration-300 ease-in-out">
+                    <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg">
                         About Us
                     </Button>
                     <Link to="/upload">
-                        <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg transition-all duration-300 ease-in-out">
+                        <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg">
                             Upload
                         </Button>
                     </Link>
                     <Link to="/browse">
-                        <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg transition-all duration-300 ease-in-out">
+                        <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg">
                             Browse
                         </Button>
                     </Link>
                     <Link to="/myQuizzes">
-                        <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg transition-all duration-300 ease-in-out">
+                        <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg">
                             My Quizzes
                         </Button>
                     </Link>
                 </div>
+
                 <div className="p-1">
                     {isLoggedIn ? (
-                        <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg transition-all duration-300 ease-in-out">
-                            Profile
-                        </Button>
+                        <Link to="/profile">
+                            <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg">
+                                Profile
+                            </Button>
+                        </Link>
                     ) : (
                         <>
                             <Link to="/login">
-                                <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg transition-all duration-300 ease-in-out">
+                                <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg">
                                     Login
                                 </Button>
                             </Link>
                             <Link to="/register">
-                                <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg transition-all duration-300 ease-in-out">
+                                <Button className="bg-transparent hover:bg-gray-700 border border-gray-500 text-white px-4 py-2 rounded-lg">
                                     Register
                                 </Button>
                             </Link>
@@ -83,8 +112,6 @@ function Landing() {
                             Explore Quizzes
                         </Button>
                     </Link>
-                </div>
-                <div className="hidden sm:block w-1/5 opacity-50 m-2 rounded-lg  bg-transparent border">
                 </div>
             </div> 
         </div>

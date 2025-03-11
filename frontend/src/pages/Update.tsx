@@ -29,6 +29,7 @@ const UpdateQuiz: React.FC = () => {
   const [isPublic, setVisibility] = useState<boolean>(true);
   const [applySameMarks, setApplySameMarks] = useState<boolean>(true);
   const [marksPerQuestion, setMarksPerQuestion] = useState<number | string>('');
+
   const [timeInputType, setTimeInputType] = useState<'total' | 'perQuestion'>('total');
   const { quizId } = useParams<{ quizId: string }>();
   const [quiz, setQuiz] = useState<Quiz | null>(null);
