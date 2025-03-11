@@ -122,7 +122,7 @@ const UpdateQuiz: React.FC = () => {
         })),
         time: timeInputType === 'total' ? Number(timeLimit) : Number(timeLimit) * quiz.questions.length,
         difficultyLevel: "Easy", 
-        Public: true 
+        Public: isPublic
       };
       await axios.patch(`http://localhost:8080/api/quiz/${quizId}`, updatedQuiz, {
         withCredentials: true,

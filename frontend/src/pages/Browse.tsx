@@ -2,11 +2,17 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+interface Question {
+  marks: number;
+}
+
 interface DataItem {
   _id: string;
   title: string;
   description: string;
-  Public: boolean;
+  time: number; 
+  difficultyLevel : string;
+  questions: Question[]; 
 }
 
 const DataDisplayPage: React.FC = () => {
@@ -26,7 +32,6 @@ const DataDisplayPage: React.FC = () => {
           }
         );
 
-        // Extract the quizzes array
         if (Array.isArray(response.data.quizzes)) {
           setData(response.data.quizzes);
         } else {
@@ -74,26 +79,34 @@ const DataDisplayPage: React.FC = () => {
             .filter((item) =>
               item.title.toLowerCase().includes(searchQuery.toLowerCase())
             )
-            .map((item, index) => (
-              <li
-                key={item._id}
-                className="p-5 border rounded-xl shadow-md bg-gray-50 transition-transform transform hover:scale-105 hover:shadow-lg"
-              >
-                <h3 className="text-xl font-semibold text-gray-900">
-                  {index + 1}. {item.title}
-                </h3>
-                <p className="text-gray-700 mt-2">{item.description}</p>
-                <p className="text-sm text-gray-500 mt-1">
-                  {item.Public ? "Public" : "Private"}
-                </p>
-                <button
-                  className="mt-4 px-5 py-2 bg-indigo-500 text-white font-semibold rounded-lg hover:bg-indigo-600 transition duration-200"
-                  onClick={() => handleTakeQuiz(item._id)}
+            .map((item, index) => {
+              // Compute total marks by summing up question marks
+              const totalMarks = item.questions?.reduce(
+                (sum, question) => sum + question.marks,
+                0
+              ) || 0;
+
+              return (
+                <li
+                  key={item._id}
+                  className="p-5 border rounded-xl shadow-md bg-gray-50 transition-transform transform hover:scale-105 hover:shadow-lg"
                 >
-                   Take Quiz
-                </button>
-              </li>
-            ))}
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {index + 1}. {item.title}
+                  </h3>
+                  <p className="text-gray-700 mt-2">{item.description}</p>
+                  <p className="text-sm text-gray-500 mt-1">
+                     <b>Time:</b> {item.time} min | <b>Marks:</b> {totalMarks} | <b>Difficulty:</b> {item.difficultyLevel}
+                  </p>
+                  <button
+                    className="mt-4 px-5 py-2 bg-indigo-500 text-white font-semibold rounded-lg hover:bg-indigo-600 transition duration-200"
+                    onClick={() => handleTakeQuiz(item._id)}
+                  >
+                    Take Quiz
+                  </button>
+                </li>
+              );
+            })}
         </ul>
       </div>
     </div>

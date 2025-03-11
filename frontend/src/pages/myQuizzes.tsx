@@ -77,12 +77,12 @@ const MyQuizzes: React.FC = () => {
             {quizzesCreated.length === 0 ? (
               <p className="text-gray-500 dark:text-gray-400 text-center">No quizzes created yet.</p>
             ) : (
-              quizzesCreated.map((quiz) => (
+              quizzesCreated.map((quiz, index) => (
                 <div
                   key={quiz._id}
                   className="p-5 border rounded-xl shadow-md bg-gray-50 transition-transform transform hover:scale-105 hover:shadow-lg"
                 >
-                  <h3 className="text-xl font-semibold text-gray-900">{quiz.title}</h3>
+                  <h3 className="text-xl font-semibold text-gray-900">{index+1}. {quiz.title}</h3>
                   <p className="text-gray-700 mt-2">{quiz.description}</p>
                   <div className="mt-4 flex gap-3">
                     <Button variant="default" className="bg-green-500" onClick={() => handleTakeQuiz(quiz._id)}>
