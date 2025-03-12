@@ -7,7 +7,7 @@ interface QuizItem {
   _id: string;
   title: string;
   description: string;
-  public: boolean;
+  Public: boolean;
 }
 
 const MyQuizzes: React.FC = () => {
@@ -164,12 +164,12 @@ const MyQuizzes: React.FC = () => {
                           <h3 className="text-xl font-bold text-gray-900 group-hover:text-indigo-700 transition-colors">
                             {quiz.title}
                           </h3>
-                          {quiz.public && (
+                          {quiz.Public && (
                             <span className="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                               Public
                             </span>
                           )}
-                          {!quiz.public && (
+                          {!quiz.Public && (
                             <span className="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                               Private
                             </span>
