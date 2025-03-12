@@ -1,9 +1,14 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect, ChangeEventHandler } from 'react';
+import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { useParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { AlertCircle, CheckCircle, Clock, Award, Eye, Edit, CheckSquare } from 'lucide-react';
 
 interface Question {
   answer: string | number | readonly string[] | undefined;
@@ -19,9 +24,9 @@ interface Quiz {
   title: string;
   description: string;
   questions: Question[];
-  timeLimit: number ; 
-  marksPerQuestion: number ;
-  difficultyLevel: string
+  timeLimit: number;
+  marksPerQuestion: number;
+  difficultyLevel: string;
 }
 
 const UpdateQuiz: React.FC = () => {
@@ -29,14 +34,20 @@ const UpdateQuiz: React.FC = () => {
   const [isPublic, setVisibility] = useState<boolean>(true);
   const [applySameMarks, setApplySameMarks] = useState<boolean>(true);
   const [marksPerQuestion, setMarksPerQuestion] = useState<number | string>('');
-
   const [timeInputType, setTimeInputType] = useState<'total' | 'perQuestion'>('total');
   const { quizId } = useParams<{ quizId: string }>();
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [message, setMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
   const navigate = useNavigate();
+  const [difficulty, setDifficulty] = useState(1);
+  const difficultyLabels = ["Easy", "Medium", "Hard"];
+
+  const handleSliderChange = (value: React.SetStateAction<number>[]) => {
+    setDifficulty(value[0]);
+  };
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -47,7 +58,7 @@ const UpdateQuiz: React.FC = () => {
           withCredentials: true,
         });
         const fetchedQuiz = response.data.quiz;
-                const clonedQuiz = JSON.parse(JSON.stringify(fetchedQuiz)) as Quiz;
+        const clonedQuiz = JSON.parse(JSON.stringify(fetchedQuiz)) as Quiz;
         setQuiz(clonedQuiz);
         setMessage('');
       } catch (error) {
@@ -58,20 +69,13 @@ const UpdateQuiz: React.FC = () => {
     };
 
     fetchQuiz();
-  }, [quizId]); 
+  }, [quizId]);
 
-    const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (quiz) {
       setQuiz({ ...quiz, title: e.target.value });
     }
   };
-
-  const handleDifficultyLevel: ChangeEventHandler<HTMLSelectElement> = (e) => {
-    if (quiz) {
-      setQuiz({ ...quiz, difficultyLevel: e.target.value });
-    }
-  };
-  
 
   const handleMarksChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -92,13 +96,13 @@ const UpdateQuiz: React.FC = () => {
     });
   };
 
-    const handleDescriptionChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+  const handleDescriptionChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     if (quiz) {
       setQuiz({ ...quiz, description: e.target.value });
     }
   };
-  
-    const handleQuestionChange = (questionId: string, value: string) => {
+
+  const handleQuestionChange = (questionId: string, value: string) => {
     setQuiz((prevQuiz) => {
       if (!prevQuiz) return null;
       return {
@@ -110,7 +114,7 @@ const UpdateQuiz: React.FC = () => {
     });
   };
 
-    const handleOptionChange = (questionId: string, optionIndex: number, value: string) => {
+  const handleOptionChange = (questionId: string, optionIndex: number, value: string) => {
     setQuiz((prevQuiz) => {
       if (!prevQuiz) return null;
       return {
@@ -124,7 +128,7 @@ const UpdateQuiz: React.FC = () => {
     });
   };
 
-    const handleCorrectAnswerChange = (questionId: string, value: string) => {
+  const handleCorrectAnswerChange = (questionId: string, value: string) => {
     if (quiz) {
       const updatedQuestions = quiz.questions.map((q) =>
         q._id === questionId ? { ...q, answer: value } : q
@@ -133,14 +137,12 @@ const UpdateQuiz: React.FC = () => {
     }
   };
 
-  
-
-   const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!quiz) return;
 
     try {
-      const updatedQuiz = { 
+      const updatedQuiz = {
         title: quiz.title,
         description: quiz.description,
         questions: quiz.questions.map((q, index) => ({
@@ -151,15 +153,15 @@ const UpdateQuiz: React.FC = () => {
           marks: applySameMarks ? Number(marksPerQuestion) : q.marks || 5
         })),
         time: timeInputType === 'total' ? Number(timeLimit) : Number(timeLimit) * quiz.questions.length,
-        difficultyLevel: quiz.difficultyLevel, 
+        difficultyLevel: difficultyLabels[difficulty],
         Public: isPublic
       };
+      
       await axios.patch(`http://localhost:8080/api/quiz/${quizId}`, updatedQuiz, {
         withCredentials: true,
       });
       setMessage('Quiz updated successfully!');
       setShowPopup(true);
-      
     } catch (error) {
       setMessage('Error updating quiz. Please try again.');
       setShowPopup(true);
@@ -167,241 +169,348 @@ const UpdateQuiz: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-indigo-500 to-purple-600 p-6 w-screen relative">
+    <div className="min-h-screen bg-gradient-to-r from-indigo-500 to-purple-600 p-4 md:p-6 flex justify-center w-screen items-center">
       {showPopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center backdrop-blur-md">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-md">
-            <p className="text-xl font-bold mb-4">{message}</p>
-            <Button onClick={() => {
-              setShowPopup(false)
-              navigate('/myQuizzes')
-            }} className="bg-indigo-500 w-1/3 py-2" >OK</Button>
-          </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center backdrop-blur-md z-50 ">
+          <Card className="max-w-md">
+            <CardHeader>
+              <div className="flex justify-center mb-2">
+                {message.includes('success') ? (
+                  <CheckCircle className="h-12 w-12 text-green-500" />
+                ) : (
+                  <AlertCircle className="h-12 w-12 text-red-500" />
+                )}
+              </div>
+              <CardTitle className="text-center">{message}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex justify-center">
+              <Button 
+                onClick={() => {
+                  setShowPopup(false);
+                  if (message.includes('success')) {
+                    navigate('/myQuizzes');
+                  }
+                }} 
+                className="bg-indigo-500 hover:bg-indigo-600 w-1/3"
+              >
+                OK
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       )}
       
-    <div className="p-6 max-w-4xl mx-auto bg-white rounded-lg">
-      <h1 className="text-3xl font-extrabold mb-6 text-center">Update Quiz</h1>
+      <div className="w-full max-w-3xl">
+        <Card className="bg-white bg-opacity-95 shadow-2xl">
+          <CardHeader className="border-b border-gray-200 pb-4">
+            <CardTitle className="text-3xl font-bold text-center text-indigo-800">Update Quiz</CardTitle>
+          </CardHeader>
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : quiz ? (
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="text-xl block mb-2 font-bold">Visibility:</label>
-            <div className="flex-col">
-              <div>
-              <label>
-                <input
-                  type="radio"
-                  value="total"
-                  checked = {isPublic===true}
-                  onChange={() => setVisibility(true)}
-                />
-                Public
-              </label>
+          {loading ? (
+            <CardContent className="flex justify-center p-8">
+              <div className="flex flex-col items-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-700"></div>
+                <p className="mt-4 text-lg font-medium text-gray-700">Loading quiz data...</p>
               </div>
-              <div>
-              <label>
-                <input
-                  type="radio"
-                  value="perQuestion"
-                  checked = {isPublic===false}
-                  onChange={() => setVisibility(false)}
-                />
-                Private
-              </label>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label className="text-xl block mb-2 font-bold" htmlFor="difficulty">Difficulty:</label>
-              <select 
-                id="difficulty" 
-                className="border border-gray-300 rounded-md p-2 w-full bg-white" 
-                onChange={handleDifficultyLevel} 
-                defaultValue={"Easy"}
-                >
-                  <option value="Easy">Easy</option>
-                  <option value="Medium">Medium</option>
-                  <option value="Hard">Hard</option>
-              </select>
-          </div>
-
-
-          {/* Title and Description */}
-          <div>
-            <label className="text-xl block mb-2 font-bold">Title:</label>
-            <Input type="text" value={quiz.title} onChange={handleTitleChange} required />
-          </div>
-
-          <div>
-            <label className="text-xl block mb-2 font-bold">Description:</label>
-            <textarea
-              value={quiz.description}
-              onChange={handleDescriptionChange}
-              required
-              className="w-full p-2 border rounded bg-white"
-              rows={3}
-            />
-          </div>
-
-          {/* Time Input Type Toggle */}
-          <div>
-            <label className="text-xl block mb-2 font-bold">Choose Type:</label>
-            <div className="flex-col">
-              <div>
-              <label>
-                <input
-                  type="radio"
-                  value="total"
-                  checked={timeInputType === 'total'}
-                  onChange={() => setTimeInputType('total')}
-                />
-                Total Time (in minutes)
-              </label>
-              </div>
-              <div>
-              <label>
-                <input
-                  type="radio"
-                  value="perQuestion"
-                  checked={timeInputType === 'perQuestion'}
-                  onChange={() => setTimeInputType('perQuestion')}
-                />
-                Time Per Question (in minutes)
-              </label>
-              </div>
-            </div>
-          </div>
-
-          {/* Time Limit */}
-          <div>
-            <label className="text-xl block mb-2 font-bold">Time Limit:</label>
-            <Input
-              type="text"  // Change from "number" to "text"
-              value={timeLimit}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (/^\d*$/.test(value)) { // Allow only digits
-                  setTimeLimit(value);
-                }
-              }}
-              required
-            />
-          </div>
-
-          {/* Marks Selection */}
-          <div>
-              <label className="text-xl block mb-2 font-bold">Marks Assignment:</label>
-              <div className="flex gap-4">
-                <label>
-                  <input
-                    type="radio"
-                    value="same"
-                    checked={applySameMarks}
-                    onChange={() => setApplySameMarks(true)}
-                  />
-                  Same Marks for All Questions
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    value="different"
-                    checked={!applySameMarks}
-                    onChange={() => setApplySameMarks(false)}
-                  />
-                  Different Marks Per Question
-                </label>
-              </div>
-            </div>
-
-            {/* Single Marks Input */}
-            {applySameMarks && (
-              <div>
-                <label className="text-xl block mb-2 font-bold">Marks Per Question:</label>
-                <Input type="text" value={marksPerQuestion} onChange={handleMarksChange} required />
-              </div>
-            )}
-
-          {/* Questions */}
-          <div className="space-y-6">
-            <h2 className="text-xl font-bold">Questions</h2>
-            {quiz.questions.map((question, qIndex) => (
-              <div key={question._id} className="p-4 border rounded-lg hover:shadow-2xl">
-                <h3 className="font-semibold mb-2">Question {qIndex + 1}</h3>
-
-                {/* Question Text */}
-                <div className="mb-4">
-                  <label className="font-semibold block mb-2">Question Text:</label>
-                  <Input
-                    type="text"
-                    value={question.question}
-                    onChange={(e) => handleQuestionChange(question._id, e.target.value)}
-                    required
-                  />
+            </CardContent>
+          ) : quiz ? (
+            <form onSubmit={handleSubmit}>
+              <Tabs defaultValue="basic" className="w-full">
+                <div className="px-6 pt-4 border-b border-gray-200">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="basic" className="bg-white">Basic Info</TabsTrigger>
+                    <TabsTrigger value="settings" className="bg-white">Settings</TabsTrigger>
+                    <TabsTrigger value="questions" className="bg-white">Questions</TabsTrigger>
+                  </TabsList>
                 </div>
 
-                {/* Options */}
-                <div className="mb-4">
-                  <label className="font-semibold block mb-2">Options:</label>
-                  {question.options.map((option, oIndex) => (
-                    <div key={oIndex} className="mb-2">
-                      <Input
-                        type="text"
-                        value={option}
-                        onChange={(e) => handleOptionChange(question._id, oIndex, e.target.value)}
-                        placeholder={`Option ${oIndex + 1}`}
+                <TabsContent value="basic" className="p-6 space-y-6">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-lg font-medium block mb-2">Title</label>
+                      <Input 
+                        type="text" 
+                        value={quiz.title} 
+                        onChange={handleTitleChange}
+                        className="text-lg"
+                        placeholder="Enter quiz title" 
+                        required 
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-lg font-medium block mb-2">Description</label>
+                      <textarea
+                        value={quiz.description}
+                        onChange={handleDescriptionChange}
+                        placeholder="Describe your quiz"
+                        className="w-full p-3 border rounded-md text-base bg-white"
+                        rows={4}
                         required
                       />
                     </div>
-                  ))}
-                </div>
+                  </div>
+                </TabsContent>
 
-                {/* Correct Answer */}
-                <div>
-                  <label className="font-semibold block mb-2">Correct Answer:</label>
-                  <select
-                    value={question.answer}
-                    onChange={(e) => handleCorrectAnswerChange(question._id, e.target.value)}
-                    className="w-full p-2 border rounded bg-white"
-                    required
+                <TabsContent value="settings" className="p-6 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg flex items-center">
+                          <Eye className="mr-2 h-5 w-5" />
+                          Visibility
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex items-center gap-4">
+                          <Switch 
+                            checked={isPublic} 
+                            onCheckedChange={setVisibility} 
+                          />
+                          <span className="font-medium">
+                            {isPublic ? "Public" : "Private"}
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg flex items-center">
+                          <Award className="mr-2 h-5 w-5" />
+                          Difficulty
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex flex-col space-y-2">
+                          <Slider
+                            defaultValue={[difficulty]}
+                            min={0}
+                            max={2}
+                            step={1}
+                            onValueChange={handleSliderChange}
+                          />
+                          <div className="flex justify-between">
+                            {difficultyLabels.map((label, index) => (
+                              <Badge 
+                                key={label} 
+                                variant={difficulty === index ? "default" : "outline"}
+                                className={difficulty === index ? "bg-indigo-600" : ""}
+                              >
+                                {label}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg flex items-center">
+                          <Clock className="mr-2 h-5 w-5" />
+                          Time Limit
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <span>{timeInputType === "total" ? "Total Quiz Time" : "Time Per Question"}</span>
+                            <Switch
+                              checked={timeInputType === "total"}
+                              onCheckedChange={() => setTimeInputType(prev => prev === "total" ? "perQuestion" : "total")}
+                            />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Input
+                              type="text"
+                              placeholder={timeInputType === "total" ? "Total minutes" : "Minutes per question"}
+                              value={timeLimit}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (/^\d*$/.test(value)) {
+                                  setTimeLimit(value);
+                                }
+                              }}
+                              required
+                            />
+                            <span className="text-sm text-gray-500">min</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg flex items-center">
+                          <Award className="mr-2 h-5 w-5" />
+                          Marks Assignment
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-4">
+                            <Switch
+                              checked={applySameMarks}
+                              onCheckedChange={setApplySameMarks}
+                            />
+                            <span>{applySameMarks ? "Same marks for all questions" : "Different marks per question"}</span>
+                          </div>
+                          
+                          {applySameMarks && (
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="text"
+                                placeholder="Marks per question"
+                                value={marksPerQuestion}
+                                onChange={handleMarksChange}
+                                required
+                              />
+                              <span className="text-sm text-gray-500">points</span>
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="questions" className="p-6">
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <div className="w-full md:w-1/4 space-y-2 border-r pr-4">
+                      <div className="font-medium mb-2">Questions List</div>
+                      <div className="space-y-1 max-h-96 overflow-y-auto">
+                        {quiz.questions.map((_, index) => (
+                          <div 
+                            key={index}
+                            onClick={() => setActiveQuestionIndex(index)}
+                            className={`p-2 rounded-md cursor-pointer transition-colors ${
+                              activeQuestionIndex === index 
+                                ? "bg-indigo-100 text-indigo-700 font-medium"
+                                : "hover:bg-gray-100"
+                            }`}
+                          >
+                          Question {index + 1}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="w-full md:w-3/4">
+                      {quiz.questions[activeQuestionIndex] && (
+                        <Card>
+                          <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                            <CardTitle className="text-lg flex items-center">
+                              <Edit className="mr-2 h-5 w-5" />
+                              Question {activeQuestionIndex + 1}
+                            </CardTitle>
+                            {!applySameMarks && (
+                              <div className="flex items-center">
+                                <span className="mr-2 text-sm">Marks:</span>
+                                <Input
+                                  type="text"
+                                  className="w-16 h-8 text-center"
+                                  value={quiz.questions[activeQuestionIndex].marks || '5'}
+                                  onChange={(e) => handleQuestionMarksChange(quiz.questions[activeQuestionIndex]._id, e.target.value)}
+                                  required
+                                />
+                              </div>
+                            )}
+                          </CardHeader>
+                          <CardContent className="space-y-4">
+                            <div>
+                              <label className="font-medium block mb-2">Question Text</label>
+                              <Input
+                                type="text"
+                                value={quiz.questions[activeQuestionIndex].question}
+                                onChange={(e) => handleQuestionChange(quiz.questions[activeQuestionIndex]._id, e.target.value)}
+                                placeholder="Enter question text"
+                                required
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="font-medium block mb-2">Options</label>
+                              <div className="space-y-2">
+                                {quiz.questions[activeQuestionIndex].options.map((option, oIndex) => (
+                                  <div key={oIndex} className="flex items-center gap-2">
+                                    <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-gray-200 text-xs font-medium">
+                                      {String.fromCharCode(65 + oIndex)}
+                                    </div>
+                                    <Input
+                                      type="text"
+                                      value={option}
+                                      onChange={(e) => handleOptionChange(quiz.questions[activeQuestionIndex]._id, oIndex, e.target.value)}
+                                      placeholder={`Option ${oIndex + 1}`}
+                                      required
+                                    />
+                                    
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            <div>
+                              <label className="font-medium block mb-2">Correct Answer</label>
+                              <div className="grid grid-cols-2 gap-2">
+                                {quiz.questions[activeQuestionIndex].options.map((option, oIndex) => (
+                                  <div
+                                    key={oIndex}
+                                    onClick={() => handleCorrectAnswerChange(quiz.questions[activeQuestionIndex]._id, option)}
+                                    className={`p-2 border rounded-md cursor-pointer flex items-center gap-2 ${
+                                      quiz.questions[activeQuestionIndex].answer === option
+                                        ? 'bg-green-50 border-green-500'
+                                        : 'hover:bg-gray-50'
+                                    }`}
+                                  >
+                                    {quiz.questions[activeQuestionIndex].answer === option && (
+                                      <CheckSquare className="h-4 w-4 text-green-500" />
+                                    )}
+                                    <span>{option}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
+              
+              <div className="p-6 border-t border-gray-200 flex justify-end">
+                <div className="flex gap-4">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => navigate('/myQuizzes')}
                   >
-                    {question.options.map((option, oIndex) => (
-                      <option key={oIndex} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                  >
+                    Update Quiz
+                  </Button>
                 </div>
-
-                {/* Marks Per Question (if applicable) */}
-                {!applySameMarks && (
-                    <div className="mt-4">
-                      <label className="font-semibold block mb-2">Marks:</label>
-                      <Input
-                        type="text"
-                        value={question.marks || '5'}
-                        onChange={(e) => handleQuestionMarksChange(question._id, e.target.value)}
-                        required
-                      />
-                    </div>
-                  )}
               </div>
-            ))}
-          </div>
-            <div className='flex justify-center'>
-            <Button type="submit" className=" bg-indigo-500 w-1/3 h-11 font-extrabold ">
-            Update Quiz
-          </Button>
-            </div>
-          
-        </form>
-      ) : (
-        <p>No quiz found.</p>
-      )}
-    </div>
+            </form>
+          ) : (
+            <CardContent className="p-6 text-center">
+              <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+              <p className="text-lg font-medium">No quiz found with the provided ID.</p>
+              <Button 
+                onClick={() => navigate('/myQuizzes')} 
+                className="mt-4 bg-indigo-600"
+              >
+                Return to My Quizzes
+              </Button>
+            </CardContent>
+          )}
+        </Card>
+      </div>
     </div>
   );
 };

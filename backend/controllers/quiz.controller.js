@@ -354,51 +354,58 @@ const saveQuestion = async (req, res)=>{
     }
 }
 
-const saveQuizAttempt = async (req, res)=>{
+const saveQuizAttempt = async (req, res) => {
     try {
-        const quizID = req.params.id
-        const {parentQuizId, timeLeft} = req.body
-        if (!mongoose.Types.ObjectId.isValid(quizID) || !mongoose.Types.ObjectId.isValid(parentQuizId))
+        const quizID = req.params.id;
+        const { parentQuizId, timeLeft } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(quizID) || !mongoose.Types.ObjectId.isValid(parentQuizId)) {
             return res.status(400).json({ error: 'Invalid quiz ID or parent Quiz ID' });
-        const attempt = await Attempt.findById(quizID)
-        const parentQuiz = await Quiz.findById(parentQuizId)
-        if(!attempt)
-            return res.status(404).json({error: 'attempt not found'})
-        let totalMarks = 0;
-        attempt.questions.forEach(question => {
+        }
+
+        const attempt = await Attempt.findById(quizID);
+        if (!attempt) {
+            return res.status(404).json({ error: 'Attempt not found' });
+        }
+
+        const parentQuiz = await Quiz.findById(parentQuizId);
+        if (!parentQuiz) {
+            return res.status(404).json({ error: 'Parent quiz not found' });
+        }
+
+        if (!Array.isArray(parentQuiz.questions)) {
+            return res.status(500).json({ error: 'Parent quiz questions data is invalid' });
+        }
+
+        let totalMarks = attempt.questions.reduce((sum, question) => {
             const correspondingQuestion = parentQuiz.questions.find(
                 (q) => q.questionNumber.toString() === question.questionNumber.toString()
-            )
-            const correctAnswer = correspondingQuestion.answer
-            const marksAwarded = correspondingQuestion.marks
-            
-            if(question.markedOption){
-                if (question.markedOption === correctAnswer) {
-                    question.isCorrect = true;
-                    question.score = marksAwarded; 
-                } else {
-                    question.isCorrect = false;
-                    question.score = 0;
-                }
-            }
-            else{
-                question.isCorrect = false;
-                question.score = 0;
-            }
-            totalMarks += question.score; 
-        });
+            );
+
+            if (!correspondingQuestion) return sum; // Skip if no matching question is found
+
+            const { answer: correctAnswer, marks: marksAwarded } = correspondingQuestion;
+            question.isCorrect = question.markedOption === correctAnswer;
+            question.score = question.isCorrect ? marksAwarded : 0;
+
+            return sum + question.score;
+        }, 0);
+
         attempt.totalMarks = totalMarks;
-        const timeTaken = Quiz.time - timeLeft
-        attempt.timeTaken = timeTaken
-        await attempt.save()
+        attempt.timeTaken = parentQuiz.time*60 - timeLeft;
+
+        await attempt.save();
+
         res.status(200).json({
             message: 'Total marks calculated and updated successfully',
             totalMarks,
         });
+
     } catch (error) {
-        res.status(500).json({error: error.message})
+        res.status(500).json({ error: error.message });
     }
-}
+};
+
 
 const getMyQuizzes = async (req, res) => {
     try {

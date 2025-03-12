@@ -57,6 +57,7 @@ const AttemptPerformance = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
   if (!performanceDetails) return <div>No performance data available.</div>;
+  const timeTaken = performanceDetails.attempt.timeTaken;
 
   return (
     <div className="w-screen bg-gradient-to-r from-indigo-500 to-purple-600 h-screen flex justify-center items-center">
@@ -107,13 +108,17 @@ const AttemptPerformance = () => {
           )}
         </div>
       )}
-
       <div className="mt-6 text-lg font-semibold">
         <p>Total Score: {performanceDetails.attempt.totalMarks}</p>
-        <p>Time Taken: {performanceDetails.attempt.timeTaken} seconds</p>
+        <p>
+          Time Taken: {Math.floor(timeTaken / 60) > 0 
+          ? `${Math.floor(timeTaken / 60)} minutes ${timeTaken % 60} seconds`
+          : `${timeTaken} seconds`}
+        </p>
       </div>
+
       <div className="flex justify-center">
-      <Button className="bg-green-500 text-black hover:text-white" onClick={()=>navigate('/landing')}>Proceed</Button>
+      <Button className="bg-green-500 text-black hover:text-white" onClick={()=>navigate('/')}>Proceed</Button>
       </div>
     </div>
     </div>
