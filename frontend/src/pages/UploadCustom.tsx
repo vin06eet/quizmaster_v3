@@ -1,16 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useState, ChangeEvent, FormEvent, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-const UploadForm: React.FC = () => {
+const UploadCustomForm: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [message, setMessage] = useState<string>("");
   const [messageType, setMessageType] = useState<"success" | "error" | "">("");
   const [loading, setLoading] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [numQuestions, setNumQuestions] = useState<string>("");
+  const [difficulty, setDifficulty] = useState<string>("easy");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
@@ -35,11 +36,17 @@ const UploadForm: React.FC = () => {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       setFile(e.dataTransfer.files[0]);
       setMessage("");
       setMessageType("");
+    }
+  };
+
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
 
@@ -55,6 +62,9 @@ const UploadForm: React.FC = () => {
     setLoading(true);
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("numQuestions", numQuestions);
+    formData.append("difficulty", difficulty);
+    
 
     try {
       const response = await axios.post("http://localhost:8080/api/upload", formData, {
@@ -67,8 +77,7 @@ const UploadForm: React.FC = () => {
       setMessage("File uploaded successfully");
       setMessageType("success");
       const uploadedId = response.data.id;
-      
-      // Short delay to show success message before navigating
+
       setTimeout(() => {
         navigate(`/update/${uploadedId}`);
       }, 800);
@@ -78,12 +87,6 @@ const UploadForm: React.FC = () => {
       console.error(error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const triggerFileInput = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
     }
   };
 
@@ -100,7 +103,6 @@ const UploadForm: React.FC = () => {
           Home
         </button>
       </div>
-      
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-extrabold text-white mb-2 tracking-tight">
@@ -110,7 +112,7 @@ const UploadForm: React.FC = () => {
             Upload a quiz file to import questions and create a new quiz
           </p>
         </div>
-        
+
         <div className="bg-white shadow-2xl rounded-2xl overflow-hidden">
           <div className="p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -159,52 +161,48 @@ const UploadForm: React.FC = () => {
                   )}
                 </div>
               </div>
-              
               {message && (
-                <div className={`p-3 rounded-lg ${
-                  messageType === "success" 
-                    ? "bg-green-100 text-green-800" 
-                    : "bg-red-100 text-red-800"
-                }`}>
-                  <div className="flex items-center">
-                    {messageType === "success" ? (
-                      <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
-                      </svg>
-                    ) : (
-                      <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"></path>
-                      </svg>
-                    )}
-                    {message}
-                  </div>
+                <div className={`p-3 rounded-lg ${messageType === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                  {message}
                 </div>
               )}
+
               
-              <Button 
-                type="submit" 
-                disabled={loading || !file} 
+
+              {
+                <div className="space-y-4 mt-4">
+                  <input
+                    type="number"
+                    value={numQuestions}
+                    onChange={(e) => setNumQuestions(e.target.value)}
+                    placeholder="Number of Questions"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 bg-white"
+                  />
+                  <select
+                    value={difficulty}
+                    onChange={(e) => setDifficulty(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 bg-white"
+                  >
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                  </select>
+                </div>
+              }
+
+              <Button
+                type="submit"
+                disabled={loading || !file}
                 className={`w-full py-3 ${
-                  !file 
-                    ? "bg-gray-400 cursor-not-allowed" 
-                    : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                  !file ? "bg-gray-400 cursor-not-allowed" : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
                 } text-white font-medium rounded-lg shadow transition-all duration-200`}
               >
-                {loading ? (
-                  <div className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Uploading...
-                  </div>
-                ) : "Upload Quiz File"}
+                {loading ? "Uploading..." : "Upload Quiz File"}
               </Button>
             </form>
-            
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-500">
-                Want to make questions out of text? <Link to="/upload/custom">Click Here</Link>
+                <Link to="/upload">Go Back</Link>
               </p>
             </div>
           </div>
@@ -214,4 +212,4 @@ const UploadForm: React.FC = () => {
   );
 };
 
-export { UploadForm };
+export { UploadCustomForm };

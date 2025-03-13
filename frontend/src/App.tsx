@@ -8,9 +8,13 @@ import { UpdateQuiz } from './pages/Update'
 import { TakeQuiz } from "./pages/TakeQuiz";
 import MyQuizzes from "./pages/myQuizzes";
 import { AttemptPerformance } from "./pages/AttemptPerformance";
+import { UploadCustomForm } from "./pages/UploadCustom";
+import { TooltipProvider } from './components/ui/tooltip';
+
 
 function App() {
   return (
+    <TooltipProvider>
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -22,8 +26,10 @@ function App() {
         <Route path="/take/:quizId" element={<TakeQuiz/>} />
         <Route path="/myQuizzes" element={<MyQuizzes/>}/>
         <Route path="/performance/:quizId" element={<AttemptPerformance/>}></Route>
+        <Route path="/upload/custom" element={<UploadCustomForm/>}/>
       </Routes>
     </Router>
+    </TooltipProvider>
   );
 }
 

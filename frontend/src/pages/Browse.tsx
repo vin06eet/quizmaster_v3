@@ -70,7 +70,7 @@ const DataDisplayPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-600 to-purple-700">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-600 to-purple-700 w-screen">
         <div className="bg-white p-8 rounded-lg shadow-xl flex flex-col items-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
           <p className="mt-4 text-lg font-medium text-gray-700">Loading quizzes...</p>
@@ -81,7 +81,7 @@ const DataDisplayPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-600 to-purple-700">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-600 to-purple-700 w-screen">
         <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
