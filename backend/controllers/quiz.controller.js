@@ -456,6 +456,32 @@ const updateFinalMarks = async (req, res)=>{
     }
 }
 
+const shareQuiz = async (req, res) => {
+    try {
+        const userID = req.user._id
+        const quizID = req.params.id
+        const { email } = req.body
+        if (!mongoose.Types.ObjectId.isValid(userID))
+            return res.status(400).json({ error: 'Invalid user ID' })
+        if (!mongoose.Types.ObjectId.isValid(quizID))
+            return res.status(400).json({ error: 'Invalid quiz ID' })
+        const addressID = await User.findOne({email})
+        const user = await User.findById(userID)
+        if(!user)
+            return res.status(404).json({error: "User not found"})
+        if(!addressID)
+            return res.status(404).json({ error: 'User not found'})
+        addressID.announcements.push({
+            sentBy: user.username.toString(),
+            message: quizID
+        })
+        await addressID.save()
+        res.status(200).json({message: "message sent successfully"})
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
+}
+
 export {
     getAllQuizzes,
     getQuizById,
@@ -472,6 +498,6 @@ export {
     createAttempt,
     getMyQuizzes,
     attemptPerformance,
-    updateFinalMarks
+    updateFinalMarks,
+    shareQuiz
 }
-

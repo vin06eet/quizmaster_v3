@@ -5,15 +5,27 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronRight, Upload, Search, List, User, Menu, Book, Trophy, Users } from "lucide-react";
+import { ChevronRight, Upload, Search, List, User, Menu, Book, Trophy, Users, Bell } from "lucide-react";
+
+interface Announcement {
+    _id: String,
+    sentBy: string,
+    message: string,
+    read: boolean
+}
 
 function Landing() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-   
+    const [userID, setUserID] = useState<string | null>(null);
+    const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [username, setUsername] = useState<{ [key: string]: string }>({});
+
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
                 const response = await axios.get('http://localhost:8080/api/islogged', { withCredentials: true });
+                setUserID(response.data.userID);
                 setIsLoggedIn(response.data.final); 
             } catch (error) {
                 console.error("Error checking login status:", error);
@@ -21,6 +33,69 @@ function Landing() {
         };
         checkLoginStatus();
     }, []);
+
+    useEffect(() => {
+        const checkAnnouncements = async () => {
+            if (!userID) return; 
+            try {
+                const response = await axios.get(`http://localhost:8080/api/fetch`, {withCredentials: true});
+                const newAnnouncements = response.data.announcements ?? [];
+                setAnnouncements(newAnnouncements);
+                const userID = newAnnouncements.map((notif: { sentBy: any; }) => notif.sentBy);
+                findUsername(userID);
+            } catch (error) {
+                console.error('Error finding announcements', error);
+            }
+        }
+        checkAnnouncements();
+        const interval = setInterval(checkAnnouncements, 5000);
+        return () => clearInterval(interval);
+    }, [userID]);
+
+    const findUsername = async (userIDs: string[]) => {
+        // Filter out IDs that we already have usernames for
+        const uniqueUserIDs = userIDs.filter((id) => !username[id]);
+
+        if (uniqueUserIDs.length === 0) return; // No new usernames to fetch
+
+        try {
+            const response = await axios.post(`http://localhost:8080/api/getUsernames`, { userIDs }, { withCredentials: true });
+            setUsername((prev) => ({ ...prev, ...response.data })); 
+        } catch (error) {
+            console.error("Error fetching usernames:", error);
+        }
+    };
+
+    const markAsRead = async (announceID: String) => {
+        try {
+            await axios.patch(`http://localhost:8080/api/quiz/markAsRead/${announceID}`, { withCredentials: true });
+            setAnnouncements(prev => prev.map(notif => ({ ...notif, read: true })));
+        } catch (error) {
+            console.error("Error marking notifications as read:", error);
+        }
+    };
+    
+    const markAllAsRead = async () => {
+        try {
+            await axios.patch("http://localhost:8080/api/quiz/markAllAsRead", { withCredentials: true });
+            setAnnouncements(prev => prev.map(notif => ({ ...notif, read: true })));
+        } catch (error) {
+            console.error("Error marking notifications as read:", error);
+        }
+    };
+    
+    useEffect(() => {
+        const findUsername = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/quiz/${userID}`, {withCredentials: true});
+                setUsername(response.data.username);
+            } catch (error) {
+                console.error('Error finding username', error)
+            }
+        }
+        findUsername();
+    }, [announcements]);
+
     useEffect(() => {
         // Add CSS to the document
         const style = document.createElement('style');
@@ -61,6 +136,7 @@ function Landing() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    
     return ( 
         <div className="w-screen min-h-screen text-white bg-[#0A0F1F]">
             {/* Animated Background */}
@@ -145,6 +221,67 @@ function Landing() {
 
                 {/* Login / Register / Profile Section */}
                 <div className="flex space-x-3">
+                {isLoggedIn && (
+                        <div className="relative">
+                            <Button variant="ghost" size="icon" onClick={() => setShowNotifications(!showNotifications)} className="relative">
+                                <Bell className="h-6 w-6 text-gray-200" />
+                                {announcements.some(notif => !notif.read) && (
+                                    <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
+                                )}
+                            </Button>
+
+                            {showNotifications && (
+                                <div className="absolute right-0 mt-2 w-64 bg-[#0E1225] border border-gray-700 shadow-lg rounded-lg p-3">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <h3 className="text-gray-200 font-semibold">Notifications</h3>
+                                        {announcements.some(notif => !notif.read) && (
+                                            <button 
+                                                onClick={markAllAsRead} 
+                                                className="text-sm text-blue-400 hover:underline"
+                                            >
+                                                Mark all as read
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {announcements.length > 0 ? (
+                                        <ul className="space-y-2">
+                                            {announcements.map((notif, index) => (
+                                                <li 
+                                                    key={index} 
+                                                    className={`text-gray-300 text-sm p-2 rounded-lg flex justify-between items-center 
+                                                        ${notif.read ? 'bg-gray-700' : 'bg-gray-800'}`}
+                                                >
+                                                    <div>
+                                                        {notif.sentBy || "Unknown User"} has shared a quiz with you.{" "}
+                                                        <Link 
+                                                            to={`/take/${notif.message}`} 
+                                                            className="text-yellow-400 underline hover:text-yellow-300"
+                                                        >
+                                                            Click here to try it out!
+                                                        </Link>
+                                                    </div>
+                                                    
+                                                    {/* Small "Mark as Read" Button */}
+                                                    {!notif.read && (
+                                                        <button 
+                                                            onClick={() => markAsRead(notif._id)} 
+                                                            className="ml-2 px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600"
+                                                        >
+                                                            ✓
+                                                        </button>
+                                                    )}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-gray-400 text-sm">No new notifications</p>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {isLoggedIn ? (
                         <Link to="/profile">
                             <Button variant="outline" className="text-white border-gray-700 hover:bg-gray-800/50 hover:text-yellow-400 flex items-center gap-2 bg-transparent">
@@ -152,7 +289,7 @@ function Landing() {
                                 <span>Profile</span>
                             </Button>
                         </Link>
-                    ) : (
+                  ) : (
                         <>
                             <Link to="/login">
                                 <Button variant="outline" className="text-white border-gray-700 hover:bg-gray-800/50 hover:text-yellow-400">

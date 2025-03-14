@@ -23,6 +23,20 @@ const userSchema = new mongoose.Schema({
     quizzesAttempted: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Quiz'
+    }],
+    announcements: [{
+        sentBy: {
+            type: String,
+            
+        },
+        message: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Quiz'
+        },
+        read: {
+            type: Boolean,
+            default: false
+        }
     }]
 }, {timestamps: true});
 

@@ -84,10 +84,26 @@ const isLoggedIn = async (req, res)=>{
         const userId = req.user._id
         const user = await User.findById(userId)
         if(!user)
-            return frames.status(400).json({final: false})
-        res.status(200).json({final: true})
+            return res.status(400).json({final: false})
+        res.status(200).json({
+            userID: userId,
+            final: true
+        })
     } catch (error) {
         res.status(500).json({istrue: false})
+    }
+}
+
+const fetchAnnouncements = async (req, res)=>{
+    try {
+        const userId = req.user._id
+        const user = await User.findById(userId)
+        if(!user)
+            return res.status(404).json({error: "user not found"})
+        const announcements = user.announcements
+        res.status(200).json({announcements})
+    } catch (error) {
+        res.status(500).json({error: error.message})
     }
 }
 
@@ -95,5 +111,6 @@ export {
     register,
     login,
     logout,
-    isLoggedIn
+    isLoggedIn,
+    fetchAnnouncements
 }
