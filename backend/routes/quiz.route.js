@@ -30,7 +30,7 @@ router.post('/quiz', authenticate, uploadQuiz)
 router.get('/quiz/attempt/:id', authenticate, attemptQuiz)
 router.post('/quiz/attempt/:id', authenticate, submitQuiz)
 router.get('/quiz/attempt/:id', authenticate, getAttempt)
-router.get('/quiz/attempt', authenticate, getAllAttempts)
+router.get('/getallattempts', authenticate, getAllAttempts)
 router.get('/quiz/public/get',authenticate, getAllPublicQuizzes)
 router.patch('/quiz/attempt/save/question/:id', authenticate, saveQuestion) // works fine
 router.patch('/quiz/attempt/save/:id', authenticate, saveQuizAttempt) //works fine

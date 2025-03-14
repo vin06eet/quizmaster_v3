@@ -255,18 +255,39 @@ const getAttempt = async (req, res) =>{
 
 const getAllAttempts = async (req, res) => {
     try {
-        const userID = req.user._id; 
-        const user = await User.findById(userID).populate('quizzesAttempted');
+        const userID = req.user._id;
+        const user = await User.findById(userID);
         if (!user)
-            return res.status(404).json({ message: "User  not found" });
-        const quizzes = user.quizzesCreated;
-        if (!quizzes || quizzes.length === 0)
-            return res.status(404).json({ message: "No quizzes found for this user" });
-        res.status(200).json({ quizzes });
+            return res.status(404).json({ message: "User not found" });
+        const attemptIDs = user.quizzesAttempted; 
+        if (!attemptIDs || attemptIDs.length === 0)
+            return res.status(404).json({ message: "No quiz attempts found for this user" });
+        const attempts = await Attempt.find({ _id: { $in: attemptIDs } }).populate('questions');
+        const quizData = attempts.map(attempt => ({
+            _id: attempt._id,
+            title: attempt.title,
+            description: attempt.description,
+            totalMarks: attempt.totalMarks,
+            timeTaken: attempt.timeTaken,
+            isCompleted: attempt.isCompleted,
+            createdAt: attempt.createdAt,
+            questions: attempt.questions.map(q => ({
+                questionNumber: q.questionNumber,
+                question: q.question,
+                options: q.options,
+                answer: q.answer,
+                markedOption: q.markedOption,
+                isCorrect: q.isCorrect,
+                score: q.score
+            }))
+        }));
+        res.status(200).json(quizData);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
+
+
 
 const getAllPublicQuizzes = async (req, res)=>{
     try {
@@ -301,6 +322,7 @@ const createAttempt = async (req, res)=>{
                 questionNumber: question.questionNumber,
                 question: question.question,
                 options: question.options,
+                answer: question.answer,
                 marks: question.marks
             })),
             time: quiz.time,
@@ -381,18 +403,16 @@ const saveQuizAttempt = async (req, res) => {
             const correspondingQuestion = parentQuiz.questions.find(
                 (q) => q.questionNumber.toString() === question.questionNumber.toString()
             );
-
-            if (!correspondingQuestion) return sum; // Skip if no matching question is found
-
+            if (!correspondingQuestion) return sum; 
             const { answer: correctAnswer, marks: marksAwarded } = correspondingQuestion;
             question.isCorrect = question.markedOption === correctAnswer;
             question.score = question.isCorrect ? marksAwarded : 0;
-
             return sum + question.score;
         }, 0);
 
         attempt.totalMarks = totalMarks;
         attempt.timeTaken = parentQuiz.time*60 - timeLeft;
+        attempt.isCompleted = true;
 
         await attempt.save();
 

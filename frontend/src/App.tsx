@@ -7,6 +7,7 @@ import { DataDisplayPage } from "./pages/Browse";
 import { UpdateQuiz } from './pages/Update'
 import { TakeQuiz } from "./pages/TakeQuiz";
 import MyQuizzes from "./pages/myQuizzes";
+import MyAttempts from "./pages/myAttempts";
 import { AttemptPerformance } from "./pages/AttemptPerformance";
 import { UploadCustomForm } from "./pages/UploadCustom";
 import { TooltipProvider } from './components/ui/tooltip';
@@ -27,6 +28,7 @@ function App() {
         <Route path="/myQuizzes" element={<MyQuizzes/>}/>
         <Route path="/performance/:quizId" element={<AttemptPerformance/>}></Route>
         <Route path="/upload/custom" element={<UploadCustomForm/>}/>
+        <Route path="/myAttempts" element={<MyAttempts/>}/>
       </Routes>
     </Router>
     </TooltipProvider>

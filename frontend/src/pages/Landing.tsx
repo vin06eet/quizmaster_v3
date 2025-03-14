@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronRight, Upload, Search, List, User, Menu, Book, Trophy, Users, Bell } from "lucide-react";
+import { ChevronRight, Upload, Search, List, User, Menu, Book, Trophy, Users, Bell, TrendingUp } from "lucide-react";
 
 interface Announcement {
     _id: String,
@@ -53,11 +53,8 @@ function Landing() {
     }, [userID]);
 
     const findUsername = async (userIDs: string[]) => {
-        // Filter out IDs that we already have usernames for
         const uniqueUserIDs = userIDs.filter((id) => !username[id]);
-
-        if (uniqueUserIDs.length === 0) return; // No new usernames to fetch
-
+        if (uniqueUserIDs.length === 0) return; 
         try {
             const response = await axios.post(`http://localhost:8080/api/getUsernames`, { userIDs }, { withCredentials: true });
             setUsername((prev) => ({ ...prev, ...response.data })); 
@@ -97,7 +94,6 @@ function Landing() {
     }, [announcements]);
 
     useEffect(() => {
-        // Add CSS to the document
         const style = document.createElement('style');
         style.textContent = `
             .animate-on-scroll {
@@ -117,7 +113,7 @@ function Landing() {
             document.head.removeChild(style);
         };
     }, []);
-    // Animation for scroll effect
+    
     useEffect(() => {
         const handleScroll = () => {
             const sections = document.querySelectorAll('.animate-on-scroll');
@@ -130,9 +126,7 @@ function Landing() {
         };
 
         window.addEventListener('scroll', handleScroll);
-        // Trigger once on load
         handleScroll();
-        
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
@@ -192,6 +186,12 @@ function Landing() {
                                         <span>My Quizzes</span>
                                     </Button>
                                 </Link>
+                                <Link to="/myAttempts">
+                                    <Button variant="ghost" className="w-full text-gray-200 text-left justify-start gap-3 hover:bg-gray-800/50 hover:text-yellow-400">
+                                        <TrendingUp size={18} />
+                                        <span>My Attempts</span>
+                                    </Button>
+                                </Link>
                             </nav>
                         </div>
                     </SheetContent>
@@ -215,6 +215,12 @@ function Landing() {
                         <Button variant="ghost" className="text-gray-200 hover:text-yellow-400 hover:bg-gray-800/50 flex items-center gap-2">
                             <List size={16} />
                             <span>My Quizzes</span>
+                        </Button>
+                    </Link>
+                    <Link to="/myAttempts">
+                        <Button variant="ghost" className="w-full text-gray-200 text-left justify-start gap-3 hover:bg-gray-800/50 hover:text-yellow-400">
+                            <TrendingUp size={16} />
+                            <span>My Attempts</span>
                         </Button>
                     </Link>
                 </div>
