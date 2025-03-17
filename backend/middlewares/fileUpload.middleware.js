@@ -6,6 +6,7 @@ const uploadImage = async (req, res, next) => {
         if(!cloudinaryResponse)
             return res.status(400).json({error: 'Failed to upload on cloudinary'})
         req.fileUrl = cloudinaryResponse.url
+        
         next()
     } catch (error) {
         res.status(500).json({error: error.message})

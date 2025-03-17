@@ -57,6 +57,32 @@ const AttemptPerformance = () => {
     fetchPerformanceDetails();
   }, [quizId]);
 
+  
+  
+  const downloadPDF = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/test/route/${quizId}`,
+        { htmlText: "<h1>Test Report</h1>" }, // Replace with dynamic HTML
+        { responseType: "blob",
+          withCredentials: true
+        } // Important for handling binary data
+      );
+  
+      // Create a Blob and trigger a download
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const link = document.createElement("a");
+      link.href = window.URL.createObjectURL(blob);
+      link.download = "Report.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+  
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-slate-50">
@@ -180,7 +206,7 @@ const AttemptPerformance = () => {
                       <Badge
                         key={question.questionNumber}
                         variant="outline"
-                        className={`cursor-pointer px-3 py-1 ${
+                        className={`cursor-pointer px-3 py-1 w-12 h-12 text-center ${
                           question.isCorrect 
                             ? 'bg-green-100 text-green-800 hover:bg-green-200' 
                             : question.markedOption 
@@ -194,6 +220,9 @@ const AttemptPerformance = () => {
                     ))}
                   </div>
                 </div>
+                {/* <div>
+                  <Button onClick={()=>downloadPDF()}>Genarate Report</Button>
+                </div> */}
               </div>
             </CardContent>
           </Card>

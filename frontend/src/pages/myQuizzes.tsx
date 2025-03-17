@@ -66,7 +66,7 @@ const MyQuizzes: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-600 to-purple-700">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-600 to-purple-700 w-screen">
         <div className="bg-white p-8 rounded-lg shadow-xl flex flex-col items-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
           <p className="mt-4 text-lg font-medium text-gray-700">Loading your quizzes...</p>
@@ -144,7 +144,7 @@ const MyQuizzes: React.FC = () => {
                 You haven't created any quizzes yet. Start by creating your first quiz to see it here.
               </p>
               <button 
-                onClick={() => navigate("/create")}
+                onClick={() => navigate("/upload")}
                 className="mt-6 px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Create Your First Quiz

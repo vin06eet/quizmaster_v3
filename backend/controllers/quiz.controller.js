@@ -357,8 +357,8 @@ const saveQuestion = async (req, res)=>{
         if(!quiz)
             return res.status(400).json({error: 'Quiz not found'})
         const {questionNumber, answer} = req.body
-        if(!questionNumber||!answer)
-            return res.status(400).json({message: 'both question number and answer are required'})
+        // if(!questionNumber||!answer)
+        //     return res.status(400).json({message: 'both question number and answer are required'})
         const result = await Attempt.updateOne({
             _id: quizID,
             'questions.questionNumber': questionNumber

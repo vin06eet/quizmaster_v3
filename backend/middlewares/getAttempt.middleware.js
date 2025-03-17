@@ -1,7 +1,4 @@
-import Quiz from '../models/quiz.model.js';
-import User from '../models/user.model.js';
 import Attempt from '../models/attempt.model.js';
-import mongoose from 'mongoose';
 
 const getAttempt = async (req, res, next) =>{
     try {

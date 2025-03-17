@@ -111,8 +111,8 @@ const uploadAndOcr = async (req, res, next) => {
             const { data: { text } } = await tesseract.recognize(fileUrl, "eng");
             extractedText = text;
         }
-
-        console.log(`Recognized Text: ${extractedText}`);
+        
+        // console.log(`Recognized Text: ${extractedText}`);
         req.recognizedText = extractedText;
         next();
     } catch (error) {

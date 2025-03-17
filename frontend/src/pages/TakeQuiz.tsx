@@ -28,6 +28,7 @@ const TakeQuiz: React.FC = () => {
   const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [originalTimeLeft, setOriginalTimeLeft] = useState<number>(0);
+  const [completionTime, setCompletionTime] = useState<number>(0);
 
   useEffect(() => {
     if (!showTnc) return;
@@ -116,6 +117,7 @@ const TakeQuiz: React.FC = () => {
     } catch (err) {
       setError('Error submitting quiz. Please try again.');
     } finally {
+      setCompletionTime(originalTimeLeft - timeLeft);
       setIsSubmitting(false);
       setShowConfirmSubmit(false);
     }
@@ -534,7 +536,7 @@ const TakeQuiz: React.FC = () => {
               <h3 className="text-2xl font-bold mb-2">Your Score</h3>
               <div className="text-5xl font-bold text-indigo-400 mb-6">{score}</div>
               <p className="text-lg text-gray-300">
-                You've completed the quiz in {Math.floor((originalTimeLeft - timeLeft) / 60)} minutes and {((originalTimeLeft - timeLeft) % 60)} seconds.
+                You've completed the quiz in {Math.floor((completionTime) / 60)} minutes and {((completionTime) % 60)} seconds.
               </p>
               
               <div className="mt-8 p-4 bg-gray-700 rounded-lg">

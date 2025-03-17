@@ -65,7 +65,7 @@ function Landing() {
 
     const markAsRead = async (announceID: String) => {
         try {
-            await axios.patch(`http://localhost:8080/api/quiz/markAsRead/${announceID}`, { withCredentials: true });
+            await axios.patch(`http://localhost:8080/api/user/markAsRead/${announceID}`, { withCredentials: true });
             setAnnouncements(prev => prev.map(notif => ({ ...notif, read: true })));
         } catch (error) {
             console.error("Error marking notifications as read:", error);
@@ -74,7 +74,7 @@ function Landing() {
     
     const markAllAsRead = async () => {
         try {
-            await axios.patch("http://localhost:8080/api/quiz/markAllAsRead", { withCredentials: true });
+            await axios.patch("http://localhost:8080/api/user/markAllAsRead", { withCredentials: true });
             setAnnouncements(prev => prev.map(notif => ({ ...notif, read: true })));
         } catch (error) {
             console.error("Error marking notifications as read:", error);
@@ -153,7 +153,7 @@ function Landing() {
                 {/* Sidebar Trigger */}
                 <Sheet>
                     <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon" className="sm:hidden">
+                        <Button variant="ghost" size="icon" className="lg:hidden">
                             <Menu className="h-5 w-5 text-gray-200" />
                         </Button>
                     </SheetTrigger>
@@ -198,7 +198,7 @@ function Landing() {
                 </Sheet>
 
                 {/* Desktop Navigation */}
-                <div className="hidden sm:flex items-center space-x-1">
+                <div className="hidden lg:flex items-center space-x-1">
                     <Link to="/upload">
                         <Button variant="ghost" className="text-gray-200 hover:text-yellow-400 hover:bg-gray-800/50 flex items-center gap-2">
                             <Upload size={16} />
@@ -267,8 +267,6 @@ function Landing() {
                                                             Click here to try it out!
                                                         </Link>
                                                     </div>
-                                                    
-                                                    {/* Small "Mark as Read" Button */}
                                                     {!notif.read && (
                                                         <button 
                                                             onClick={() => markAsRead(notif._id)} 
@@ -298,7 +296,7 @@ function Landing() {
                   ) : (
                         <>
                             <Link to="/login">
-                                <Button variant="outline" className="text-white border-gray-700 hover:bg-gray-800/50 hover:text-yellow-400">
+                                <Button variant="outline" className="text-white bg-gradient-to-r from-yellow-500 to-orange-600 border-gray-700 hover:bg-gray-800/50 hover:text-yellow-400">
                                     Login
                                 </Button>
                             </Link>

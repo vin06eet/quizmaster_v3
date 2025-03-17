@@ -19,7 +19,7 @@ const geminiApi = async (req, res, next)=>{
           "<Option 3>",
           "<Option 4>"
         ],
-        "answer": "<The correct answer(The complete option string and not just the option) or an empty string if unknown>"
+        "answer": "<The correct answer(The complete option text and not the option number) or an empty string if unknown>"
       }
     ]
   }
