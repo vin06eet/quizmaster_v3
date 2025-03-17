@@ -166,8 +166,8 @@ function Register() {
      </div>
      
      {/* Add glass morphism elements for depth */}
-     <div className="hidden md:block absolute top-1/4 left-24 w-40 h-40 rounded-full border border-white/10 backdrop-blur-xl" style={{ background: 'linear-gradient(45deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))' }}></div>
-     <div className="hidden md:block absolute bottom-1/4 right-24 w-64 h-64 rounded-full border border-white/10 backdrop-blur-xl" style={{ background: 'linear-gradient(45deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))' }}></div>
+     <div className="hidden lg:block absolute top-1/4 left-24 w-40 h-40 rounded-full border border-white/10 backdrop-blur-xl" style={{ background: 'linear-gradient(45deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))' }}></div>
+     <div className="hidden lg:block absolute bottom-1/4 right-24 w-64 h-64 rounded-full border border-white/10 backdrop-blur-xl" style={{ background: 'linear-gradient(45deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))' }}></div>
    </div>
  );
 }

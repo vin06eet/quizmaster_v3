@@ -55,7 +55,7 @@ const markAsRead = async (req, res) => {
         const user = await User.findById(userID);
         if (!user)
             return res.status(404).json({ error: "User not found" });
-        const announcement = user.announcements.id(announceID);
+        const announcement = user.announcements.find(a => a._id.toString() === announceID);
         if (!announcement)
             return res.status(404).json({ error: "Announcement not found" });
         announcement.read = true;

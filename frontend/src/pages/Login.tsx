@@ -39,9 +39,9 @@ function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0f172a] relative overflow-hidden w-screen">
       {/* Animated background elements */}
-      <div className="absolute w-full h-full">
+      <div className="absolute top-0 left-0 w-full h-full bg-white/5">
         <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-        <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
         <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
         <div className="absolute -bottom-8 right-20 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-6000"></div>
       </div>
@@ -147,8 +147,8 @@ function Login() {
      </div>
      
      {/* Add glass morphism elements for depth */}
-     <div className="hidden md:block absolute top-1/4 left-24 w-40 h-40 rounded-full border border-white/10 backdrop-blur-xl" style={{ background: 'linear-gradient(45deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))' }}></div>
-     <div className="hidden md:block absolute bottom-1/4 right-24 w-64 h-64 rounded-full border border-white/10 backdrop-blur-xl" style={{ background: 'linear-gradient(45deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))' }}></div>
+     <div className="hidden lg:block absolute top-1/4 left-24 w-40 h-40 rounded-full border border-white/10 backdrop-blur-xl" style={{ background: 'linear-gradient(45deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))' }}></div>
+     <div className="hidden lg:block absolute bottom-1/4 right-24 w-64 h-64 rounded-full border border-white/10 backdrop-blur-xl" style={{ background: 'linear-gradient(45deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))' }}></div>
    </div>
  );
 }
