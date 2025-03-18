@@ -49,6 +49,10 @@ const MyQuizzes: React.FC = () => {
     navigate(`/update/${quizId}`);
   };
 
+  // const handleShareQuiz = (quizId: string) => {
+  //   navigate(`/share/${quizId}`)
+  // }
+
   const handleDeleteQuiz = async (quizId: string) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this quiz?");
     if (!confirmDelete) return;
@@ -188,7 +192,7 @@ const MyQuizzes: React.FC = () => {
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                         </svg>
-                        Take Quiz
+                        Take
                       </Button>
                       
                       <Button 
@@ -199,7 +203,7 @@ const MyQuizzes: React.FC = () => {
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                           <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                         </svg>
-                        Update Quiz
+                        Update
                       </Button>
                       
                       <Button 
@@ -212,6 +216,17 @@ const MyQuizzes: React.FC = () => {
                         </svg>
                         Delete
                       </Button>
+                      <Button 
+                        variant="default" 
+                        
+                        className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-medium rounded-lg shadow hover:from-yellow-600 hover:to-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-all duration-200"
+                          >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M2.01 21L23 12 2.01 3v7l15 2-15 2v7Z"/>
+                        </svg>
+                        Send
+                    </Button>
+
                     </div>
                   </div>
                 </li>

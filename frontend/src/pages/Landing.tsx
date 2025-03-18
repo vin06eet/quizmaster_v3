@@ -65,13 +65,21 @@ function Landing() {
 
     const markAsRead = async (announceID: String) => {
         try {
-            await axios.patch(`http://localhost:8080/api/user/markAsRead/${announceID}`, { withCredentials: true });
+            await axios.patch(`http://localhost:8080/api/user/markAsRead/${announceID}`,{}, { withCredentials: true });
             setAnnouncements(prev => prev.map(notif => ({ ...notif, read: true })));
         } catch (error) {
             console.error("Error marking notifications as read:", error);
         }
     };
     
+    const deleteNotification = async (announceID: String) =>{
+        try {
+            await axios.delete(`http://localhost:8080/api/user/delete/notif/${announceID}`, {withCredentials: true})
+        } catch (error) {
+            console.error("Error deleting the notification")
+        }   
+    }
+
     const markAllAsRead = async () => {
         try {
             await axios.patch("http://localhost:8080/api/user/markAllAsRead", { withCredentials: true });
@@ -130,6 +138,7 @@ function Landing() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    
     
     return ( 
         <div className="w-screen min-h-screen text-white bg-[#0A0F1F]">
@@ -228,64 +237,90 @@ function Landing() {
                 {/* Login / Register / Profile Section */}
                 <div className="flex space-x-3">
                 {isLoggedIn && (
-                        <div className="relative">
-                            <Button variant="ghost" size="icon" onClick={() => setShowNotifications(!showNotifications)} className="relative">
-                                <Bell className="h-6 w-6 text-gray-200" />
-                                {announcements.some(notif => !notif.read) && (
-                                    <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
-                                )}
-                            </Button>
+        <div className="relative">
+            <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setShowNotifications(!showNotifications)} 
+                className="relative hover:bg-gray-800 transition-colors duration-200"
+            >
+                <Bell className="h-6 w-6 text-gray-200 hover:text-white" />
+                {announcements.some(notif => !notif.read) && (
+                    <span className="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-[#0E1225]"></span>
+                )}
+            </Button>
 
-                            {showNotifications && (
-                                <div className="absolute right-0 mt-2 w-64 bg-[#0E1225] border border-gray-700 shadow-lg rounded-lg p-3">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <h3 className="text-gray-200 font-semibold">Notifications</h3>
-                                        {announcements.some(notif => !notif.read) && (
-                                            <button 
-                                                onClick={markAllAsRead} 
-                                                className="text-sm text-blue-400 hover:underline"
-                                            >
-                                                Mark all as read
-                                            </button>
-                                        )}
-                                    </div>
-
-                                    {announcements.length > 0 ? (
-                                        <ul className="space-y-2">
-                                            {announcements.map((notif, index) => (
-                                                <li 
-                                                    key={index} 
-                                                    className={`text-gray-300 text-sm p-2 rounded-lg flex justify-between items-center 
-                                                        ${notif.read ? 'bg-gray-700' : 'bg-gray-800'}`}
-                                                >
-                                                    <div>
-                                                        {notif.sentBy || "Unknown User"} has shared a quiz with you.{" "}
-                                                        <Link 
-                                                            to={`/take/${notif.message}`} 
-                                                            className="text-yellow-400 underline hover:text-yellow-300"
-                                                        >
-                                                            Click here to try it out!
-                                                        </Link>
-                                                    </div>
-                                                    {!notif.read && (
-                                                        <button 
-                                                            onClick={() => markAsRead(notif._id)} 
-                                                            className="ml-2 px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600"
-                                                        >
-                                                            ✓
-                                                        </button>
-                                                    )}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    ) : (
-                                        <p className="text-gray-400 text-sm">No new notifications</p>
-                                    )}
-                                </div>
+            {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-[#0E1225] border border-gray-700 shadow-xl rounded-lg p-4 z-50">
+                    <div className="flex justify-between items-center mb-3 pb-2 border-b border-gray-700">
+                        <h3 className="text-gray-200 font-semibold text-lg">Notifications</h3>
+                        <div className="flex space-x-2">
+                            {announcements.some(notif => !notif.read) && (
+                                <button 
+                                    onClick={markAllAsRead} 
+                                    className="text-sm text-blue-400 hover:text-blue-300 hover:underline transition-colors"
+                                >
+                                    Mark all as read
+                                </button>
                             )}
                         </div>
-                    )}
+                    </div>
 
+                    {announcements.length > 0 ? (
+                        <ul className="space-y-2 max-h-80 overflow-y-auto">
+                            {announcements.map((notif, index) => (
+                                <li 
+                                    key={index} 
+                                    className={`text-gray-300 text-sm p-3 rounded-lg flex flex-col 
+                                        ${notif.read ? 'bg-gray-800/50' : 'bg-gray-800'} 
+                                        hover:bg-gray-700 transition-colors duration-150`}
+                                >
+                                    <div className="flex justify-between items-start mb-2">
+                                        <span className="font-medium text-gray-200">
+                                            {notif.sentBy || "Unknown User"}
+                                        </span>
+                                        <div className="flex space-x-1">
+                                            {!notif.read && (
+                                                <button 
+                                                    onClick={() => markAsRead(notif._id)} 
+                                                    className="p-1 text-xs text-white bg-blue-600 rounded-full hover:bg-blue-500 transition-colors"
+                                                    title="Mark as read"
+                                                >
+                                                    <span className="sr-only">Mark as read</span>
+                                                    ✓
+                                                </button>
+                                            )}
+                                            <button 
+                                                onClick={() => deleteNotification(notif._id)}
+                                                className="p-1 text-xs text-white bg-red-600 rounded-full hover:bg-red-500 transition-colors"
+                                                title="Delete notification"
+                                            >
+                                                <span className="sr-only">Delete</span>
+                                                ✕
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        has shared a quiz with you.{" "}
+                                        <Link 
+                                            to={`/take/${notif.message}`} 
+                                            className="text-yellow-400 hover:text-yellow-300 font-medium underline"
+                                        >
+                                            Click here to try it out!
+                                        </Link>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-4">
+                            <p className="text-gray-400 text-sm">No notifications</p>
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    )}
                     {isLoggedIn ? (
                         <Link to="/profile">
                             <Button variant="outline" className="text-white border-gray-700 hover:bg-gray-800/50 hover:text-yellow-400 flex items-center gap-2 bg-transparent">
