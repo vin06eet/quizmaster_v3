@@ -17,7 +17,8 @@ import {
     getMyQuizzes,
     attemptPerformance,
     updateFinalMarks,
-    shareQuiz
+    shareQuiz,
+    deleteAttempt
 } from '../controllers/quiz.controller.js'
 
 const router = express.Router()
@@ -39,5 +40,6 @@ router.get('/myQuizzes', authenticate, getMyQuizzes)
 router.get('/quiz/attempt/performance/:id', authenticate, attemptPerformance)
 router.patch('quiz/attempt/final/:id', authenticate, updateFinalMarks)
 router.post('/quiz/send/:id', authenticate, shareQuiz)
+router.delete('/quiz/delete/attempt/:id', authenticate, deleteAttempt)
 
 export default router

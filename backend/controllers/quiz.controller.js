@@ -45,16 +45,23 @@ const updateQuiz = async (req, res)=>{
 
 
 //works fine
-const deleteQuiz = async (req, res)=>{
+const deleteQuiz = async (req, res) => {
     try {
+        const userID = req.user._id;
         const quiz = await Quiz.findByIdAndDelete(req.params.id);
-        if(!quiz)
-            return res.status(404).json({message: "No quiz of this id found"})
-        res.status(200).json({quiz})
+        if (!quiz)
+            return res.status(404).json({ message: "No quiz of this ID found" });
+        await User.findByIdAndUpdate(
+            userID,
+            { $pull: { quizzesCreated: req.params.id } }, 
+            { new: true }
+        );
+        res.status(200).json({ message: "Quiz deleted successfully", quiz });
     } catch (error) {
-        res.status(500).json({error: error.message})
+        res.status(500).json({ error: error.message });
     }
-}
+};
+
 
 const uploadQuiz = async (req, res)=>{
     try {
@@ -502,7 +509,24 @@ const shareQuiz = async (req, res) => {
     }
 }
 
-
+const deleteAttempt = async (req, res) => {
+    try {
+        const userID = req.user._id
+        const attemptID = req.params.id
+        const user = await User.findById(userID)
+        if(!user)
+            return res.status(404).json({error: "User not found"})
+        await Attempt.findByIdAndDelete(attemptID)
+        await User.findByIdAndUpdate(
+            userID,
+            { $pull: {quizzesAttempted: attemptID} },
+            { new: true }
+        )
+        res.status(200).json({message: "Attempt deleted successfully"})
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
+}
 
 export {
     getAllQuizzes,
@@ -521,5 +545,6 @@ export {
     getMyQuizzes,
     attemptPerformance,
     updateFinalMarks,
-    shareQuiz
+    shareQuiz,
+    deleteAttempt
 }

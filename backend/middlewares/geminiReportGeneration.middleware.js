@@ -5,21 +5,15 @@ const customGeminiApiNew = async (req, res, next)=>{
     try {
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
         const model = genAI.getGenerativeModel({model: "gemini-1.5-flash"})
-        const prompt = `You are an AI that generates **detailed quiz attempt reports** in **HTML format**, including **performance analysis**.
-
-        ### **Your Task**
-        - Given a **JSON object** with quiz attempt details, generate a **well-structured HTML report**.
-        - Highlight **correct** answers in **green**.
-        - Highlight **incorrect** answers in **red**.
-        - Provide **individual reasoning** for each incorrect answer.
-        - **Analyze overall performance** based on:
-          - Accuracy percentage
-          - Strengths (topics where the user performed well)
-          - Weaknesses (topics where the user struggled)
-          - Suggested improvement strategies
-        
-        ---
-        JSON input = ${res.attempt}
+        const prompt = `You are an AI that generates structured quiz attempt reports in JSON format.
+        Your task is to take a JSON object containing quiz attempt details and generate a detailed, structured JSON report with the following format:
+        {
+            "strongRegions": "the field where the user is strong conceptually",
+            "areasOfImprovement": "the areas where improvement is required",
+            "susggestedApproach": "suggest an approach to make the user strong in the weak fields"
+        }
+        The response should be a pure json response and it should as elaborate as possible
+        JSON input object ${req.attempt}
         `
         
         const result = await model.generateContent(prompt) 
