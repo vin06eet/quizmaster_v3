@@ -118,6 +118,37 @@ const TakeQuiz: React.FC = () => {
     }
   };
 
+  const handleClear = async () => {
+    if (!attemptId) return;
+    setSelectedOptions(prev => {
+      if (prev.hasOwnProperty(currentQuestionIndex)) {
+        const updatedOptions = { ...prev };
+        delete updatedOptions[currentQuestionIndex]; 
+        return updatedOptions;
+      }
+      return prev; 
+    });
+  
+    const newReviewed = new Set(reviewedQuestions);
+    newReviewed.delete(currentQuestionIndex);
+    setReviewedQuestions(newReviewed);
+  
+    try {
+      await axios.patch(
+        `http://localhost:8080/api/quiz/attempt/save/question/${attemptId}`,
+        {
+          questionNumber: currentQuestionIndex + 1,
+          answer: null, 
+        },
+        { withCredentials: true }
+      );
+      setToastMessage("Selection cleared successfully");
+    } catch (err) {
+      setError("Failed to clear selection. Please try again.");
+    }
+  };
+  
+
   const handleFinish = async () => {
     if (!attemptId) return;
     setIsSubmitting(true);
@@ -266,7 +297,7 @@ const TakeQuiz: React.FC = () => {
           <div className="grid grid-cols-2 gap-4 text-sm text-gray-300">
             <div className="flex items-center"><div className="w-3 h-3 bg-gray-500 rounded-full mr-2"></div> Unanswered</div>
             <div className="flex items-center"><div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div> Answered</div>
-            <div className="flex items-center"><div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div> Reviewed</div>
+            
             <div className="flex items-center"><div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div> Flagged</div>
           </div>
         </div>
@@ -389,13 +420,13 @@ const TakeQuiz: React.FC = () => {
               </div>
               
               <div className="flex items-center space-x-4">
-                <Button 
+                {/* <Button 
                   variant="ghost" 
                   className="text-gray-300 hover:text-yellow-400 flex items-center"
                   onClick={togglePause}
                 >
                   {isPaused ? 'Resume' : 'Pause'}
-                </Button>
+                </Button> */}
                 
                 <div className={`flex items-center ${getWarningClass()} font-medium px-3 py-1 rounded-full bg-gray-800/50 border border-gray-700/50`}>
                   <Clock className="mr-2 w-5 h-5" />
@@ -511,6 +542,13 @@ const TakeQuiz: React.FC = () => {
                         <ChevronRight className="h-5 w-5 ml-1" />
                       </Button>
                     ) : null}
+                    <Button 
+                        className="bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white rounded-full px-6" 
+                        onClick={handleClear}
+                        disabled={isSubmitting}
+                      >
+                        Clear
+                      </Button>
                     <Button 
                       className="bg-green-600 hover:bg-green-700 text-white rounded-full px-6" 
                       onClick={() => setShowConfirmSubmit(true)}

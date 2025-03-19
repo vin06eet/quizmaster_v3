@@ -448,18 +448,18 @@ function Landing() {
                                                 {isProfileLoading ? (
                                                     <div className="h-6 w-12 shimmer rounded"></div>
                                                 ) : (
-                                                    <p className="text-xl font-semibold text-white">{userProfile.quizzesCreated?.length || 0}</p>
+                                                    <p className="text-xl font-semibold text-center text-white">{userProfile.quizzesCreated?.length || 0}</p>
                                                 )}
                                             </div>
                                             <div className="bg-gray-800/30 p-3 rounded-lg">
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <TrendingUp size={14} className="text-yellow-400" />
-                                                    <span className="text-sm text-gray-400">Attempts</span>
+                                                    <span className="text-sm text-gray-400">Quizzes Attempted</span>
                                                 </div>
                                                 {isProfileLoading ? (
                                                     <div className="h-6 w-12 shimmer rounded"></div>
                                                 ) : (
-                                                    <p className="text-xl font-semibold text-white">{userProfile.quizzesAttempted?.length || 0}</p>
+                                                    <p className="text-xl font-semibold text-center text-white">{userProfile.quizzesAttempted?.length || 0}</p>
                                                 )}
                                             </div>
                                         </div>
@@ -556,7 +556,7 @@ function Landing() {
                   ) : (
                         <>
                             <Link to="/login">
-                                <Button variant="outline" className="text-white bg-gradient-to-r from-yellow-500 to-orange-600 border-gray-700 hover:bg-gray-800/50 hover:text-yellow-400">
+                                <Button variant="outline" className="text-white bg-gradient-to-r from-yellow-500 to-orange-600 border-gray-700 hover:bg-gray-800/50 hover:text-yellow-400 ">
                                     Login
                                 </Button>
                             </Link>

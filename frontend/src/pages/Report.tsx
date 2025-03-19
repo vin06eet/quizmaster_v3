@@ -144,7 +144,7 @@ const QuizResultsPage: React.FC = () => {
         <div className="w-full max-w-4xl">
           <div className="text-center mb-8 animate-on-scroll">
             <h1 className="text-4xl font-bold">
-              Quiz <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">Results</span>
+              Quiz <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">Analysis</span>
             </h1>
             <div className="w-24 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 mx-auto mt-4"></div>
           </div>
