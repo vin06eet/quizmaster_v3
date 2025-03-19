@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription, SheetClose  } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronRight, Upload, Search, List, User, Menu, Book, Trophy, Users, Bell, TrendingUp } from "lucide-react";
+import { ChevronRight, Upload, Search, List, User, Menu, Book, Trophy, Users, Bell, TrendingUp, Award, BarChart, Settings, LogOut } from "lucide-react";
+import { userInfo } from "os";
 
 interface Announcement {
     _id: String,
@@ -14,12 +15,63 @@ interface Announcement {
     read: boolean
 }
 
+interface UserInfo {
+    username: String,
+    email: String,
+    quizzesCreated: Array<String>,
+    quizzesAttempted: Array<String>,
+    profilePicture?: String,
+    bio?: String,
+    dateJoined?: String,
+    totalScore?: Number,
+    badges?: Array<String>,
+    recentActivity?: Array<{
+        type: String,
+        quiz: String,
+        date: String,
+        score?: Number
+    }>
+}
+
 function Landing() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userID, setUserID] = useState<string | null>(null);
     const [announcements, setAnnouncements] = useState<Announcement[]>([]);
     const [showNotifications, setShowNotifications] = useState(false);
-    const [username, setUsername] = useState<{ [key: string]: string }>({});
+    const [userProfile, setUserProfile] = useState<UserInfo>({
+        username: "",
+        email: "",
+        quizzesCreated: [],
+        quizzesAttempted: [],
+        profilePicture: "",
+        bio: "",
+        dateJoined: "",
+        totalScore: 0,
+        badges: [],
+        recentActivity: []
+    });
+    const [isProfileLoading, setIsProfileLoading] = useState(true);
+
+    useEffect(() => {
+        const getUserProfile = async () => {
+            if (!userID) return;
+            
+            setIsProfileLoading(true);
+            try {
+                const response = await axios.get(`http://localhost:8080/api/user/${userID}`, { withCredentials: true });
+                console.log("User profile data:", response.data);
+                setUserProfile(response.data);
+            } catch (error) {
+                console.error("Error getting user details:", error);
+            } finally {
+                setIsProfileLoading(false);
+            }
+        };
+        
+        if (userID) {
+            getUserProfile();
+        }
+    }, [userID]);
 
     useEffect(() => {
         const checkLoginStatus = async () => {
@@ -42,7 +94,7 @@ function Landing() {
                 const newAnnouncements = response.data.announcements ?? [];
                 setAnnouncements(newAnnouncements);
                 const userID = newAnnouncements.map((notif: { sentBy: any; }) => notif.sentBy);
-                findUsername(userID);
+                // findUsername(userID);
             } catch (error) {
                 console.error('Error finding announcements', error);
             }
@@ -52,16 +104,16 @@ function Landing() {
         return () => clearInterval(interval);
     }, [userID]);
 
-    const findUsername = async (userIDs: string[]) => {
-        const uniqueUserIDs = userIDs.filter((id) => !username[id]);
-        if (uniqueUserIDs.length === 0) return; 
-        try {
-            const response = await axios.post(`http://localhost:8080/api/getUsernames`, { userIDs }, { withCredentials: true });
-            setUsername((prev) => ({ ...prev, ...response.data })); 
-        } catch (error) {
-            console.error("Error fetching usernames:", error);
-        }
-    };
+    // const findUsername = async (userIDs: string[]) => {
+    //     const uniqueUserIDs = userIDs.filter((id) => !username[id]);
+    //     if (uniqueUserIDs.length === 0) return; 
+    //     try {
+    //         const response = await axios.post(`http://localhost:8080/api/getUsernames`, { userIDs }, { withCredentials: true });
+    //         setUsername((prev) => ({ ...prev, ...response.data })); 
+    //     } catch (error) {
+    //         console.error("Error fetching usernames:", error);
+    //     }
+    // };
 
     const markAsRead = async (announceID: String) => {
         try {
@@ -93,7 +145,7 @@ function Landing() {
         const findUsername = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/api/quiz/${userID}`, {withCredentials: true});
-                setUsername(response.data.username);
+                // setUsername(response.data.username);
             } catch (error) {
                 console.error('Error finding username', error)
             }
@@ -138,7 +190,14 @@ function Landing() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    
+    const handleLogOut = async () => {
+        try {
+            await axios.post("http://localhost:8080/api/logout", {}, { withCredentials: true });
+            setIsLoggedIn(false);
+        } catch (error) {
+            console.error({ "Error logging out": error });
+        }
+    };
     
     return ( 
         <div className="w-screen min-h-screen text-white bg-[#0A0F1F]">
@@ -162,7 +221,7 @@ function Landing() {
                 {/* Sidebar Trigger */}
                 <Sheet>
                     <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon" className="lg:hidden">
+                        <Button variant="ghost" size="icon" className="lg:hidden bg-transparent">
                             <Menu className="h-5 w-5 text-gray-200" />
                         </Button>
                     </SheetTrigger>
@@ -178,25 +237,25 @@ function Landing() {
 
                             <nav className="flex flex-col space-y-1 px-2">
                                 <Link to="/upload">
-                                    <Button variant="ghost" className="w-full text-gray-200 text-left justify-start gap-3 hover:bg-gray-800/50 hover:text-yellow-400">
+                                    <Button variant="ghost" className="w-full text-gray-200 text-left justify-start gap-3 hover:bg-gray-800/50 hover:text-yellow-400 bg-transparent">
                                         <Upload size={18} />
                                         <span>Upload</span>
                                     </Button>
                                 </Link>
                                 <Link to="/browse">
-                                    <Button variant="ghost" className="w-full text-gray-200 text-left justify-start gap-3 hover:bg-gray-800/50 hover:text-yellow-400">
+                                    <Button variant="ghost" className="w-full text-gray-200 text-left justify-start gap-3 hover:bg-gray-800/50 hover:text-yellow-400 bg-transparent">
                                         <Search size={18} />
                                         <span>Browse</span>
                                     </Button>
                                 </Link>
                                 <Link to="/myQuizzes">
-                                    <Button variant="ghost" className="w-full text-gray-200 text-left justify-start gap-3 hover:bg-gray-800/50 hover:text-yellow-400">
+                                    <Button variant="ghost" className="w-full text-gray-200 text-left justify-start gap-3 hover:bg-gray-800/50 hover:text-yellow-400 bg-transparent">
                                         <List size={18} />
                                         <span>My Quizzes</span>
                                     </Button>
                                 </Link>
                                 <Link to="/myAttempts">
-                                    <Button variant="ghost" className="w-full text-gray-200 text-left justify-start gap-3 hover:bg-gray-800/50 hover:text-yellow-400">
+                                    <Button variant="ghost" className="w-full text-gray-200 text-left justify-start gap-3 hover:bg-gray-800/50 hover:text-yellow-400 bg-transparent">
                                         <TrendingUp size={18} />
                                         <span>My Attempts</span>
                                     </Button>
@@ -209,25 +268,25 @@ function Landing() {
                 {/* Desktop Navigation */}
                 <div className="hidden lg:flex items-center space-x-1">
                     <Link to="/upload">
-                        <Button variant="ghost" className="text-gray-200 hover:text-yellow-400 hover:bg-gray-800/50 flex items-center gap-2">
+                        <Button variant="ghost" className="text-gray-200 hover:text-yellow-400 bg-transparent hover:bg-gray-800/50 flex items-center gap-2">
                             <Upload size={16} />
                             <span>Upload</span>
                         </Button>
                     </Link>
                     <Link to="/browse">
-                        <Button variant="ghost" className="text-gray-200 hover:text-yellow-400 hover:bg-gray-800/50 flex items-center gap-2">
+                        <Button variant="ghost" className="text-gray-200 hover:text-yellow-400 bg-transparent hover:bg-gray-800/50 flex items-center gap-2">
                             <Search size={16} />
                             <span>Browse</span>
                         </Button>
                     </Link>
                     <Link to="/myQuizzes">
-                        <Button variant="ghost" className="text-gray-200 hover:text-yellow-400 hover:bg-gray-800/50 flex items-center gap-2">
+                        <Button variant="ghost" className="text-gray-200 hover:text-yellow-400 bg-transparent hover:bg-gray-800/50 flex items-center gap-2">
                             <List size={16} />
                             <span>My Quizzes</span>
                         </Button>
                     </Link>
                     <Link to="/myAttempts">
-                        <Button variant="ghost" className="w-full text-gray-200 text-left justify-start gap-3 hover:bg-gray-800/50 hover:text-yellow-400">
+                        <Button variant="ghost" className="w-full text-gray-200 text-left justify-start gap-3 bg-transparent hover:bg-gray-800/50 hover:text-yellow-400">
                             <TrendingUp size={16} />
                             <span>My Attempts</span>
                         </Button>
@@ -242,16 +301,16 @@ function Landing() {
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setShowNotifications(!showNotifications)} 
-                className="relative hover:bg-gray-800 transition-colors duration-200"
+                className="relative hover:bg-gray-800 transition-colors duration-200 bg-transparent "
             >
-                <Bell className="h-6 w-6 text-gray-200 hover:text-white" />
+                <Bell className="h-6 w-6 text-gray-200 hover:text-yellow-400" />
                 {announcements.some(notif => !notif.read) && (
                     <span className="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-[#0E1225]"></span>
                 )}
             </Button>
 
             {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 bg-[#0E1225] border border-gray-700 shadow-xl rounded-lg p-4 z-50">
+                <div className="absolute right-0 mt-2 w-80 bg-[#0E1225] border border-gray-700 shadow-xl rounded-lg p-4 z-auto">
                     <div className="flex justify-between items-center mb-3 pb-2 border-b border-gray-700">
                         <h3 className="text-gray-200 font-semibold text-lg">Notifications</h3>
                         <div className="flex space-x-2">
@@ -322,12 +381,178 @@ function Landing() {
         </div>
     )}
                     {isLoggedIn ? (
-                        <Link to="/profile">
-                            <Button variant="outline" className="text-white border-gray-700 hover:bg-gray-800/50 hover:text-yellow-400 flex items-center gap-2 bg-transparent">
-                                <User size={16} />
-                                <span className="lg:hidden">Profile</span>
-                            </Button>
-                        </Link>
+                        // Profile Button with Sheet for right sidebar
+                        <Sheet>
+                            <SheetTrigger asChild>
+                                <Button variant="outline" className="text-white border-gray-700 hover:bg-gray-800/50 hover:text-yellow-400 flex items-center gap-2 bg-transparent border-none">
+                                    <User size={16} />
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side="right" className="bg-[#0E1225] border-l border-gray-800/50 w-80 overflow-y-auto">
+                                <SheetHeader className="text-left">
+                                    <SheetTitle className="text-xl text-white">Profile</SheetTitle>
+                                    <SheetDescription className="text-gray-400">
+                                        Manage your account settings and view your stats
+                                    </SheetDescription>
+                                </SheetHeader>
+                                
+                                <div className="mt-6 flex flex-col space-y-6">
+                                    {/* User Info with loading state */}
+                                    <div className="flex flex-col items-center py-6 px-4 bg-gray-800/30 rounded-lg">
+                                        {isProfileLoading ? (
+                                            <>
+                                                <div className="w-20 h-20 rounded-full shimmer mb-4"></div>
+                                                <div className="h-6 w-32 shimmer rounded mb-2"></div>
+                                                <div className="h-4 w-40 shimmer rounded"></div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="w-20 h-20 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full flex items-center justify-center mb-4 relative overflow-hidden">
+                                                    {userProfile.profilePicture ? (
+                                                        <img 
+                                                            src={`${userProfile.profilePicture}`} 
+                                                            alt={`${userProfile.username}'s profile`}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <User size={32} className="text-white" />
+                                                    )}
+                                                </div>
+                                                <h3 className="text-xl font-semibold text-white">{userProfile.username || "User"}</h3>
+                                                <p className="text-gray-400">{userProfile.email || "email@example.com"}</p>
+                                                {userProfile.bio && (
+                                                    <p className="text-sm text-gray-300 mt-3 text-center">
+                                                        {userProfile.bio}
+                                                    </p>
+                                                )}
+                                                {userProfile.dateJoined && (
+                                                    <p className="text-xs text-gray-400 mt-3">
+                                                        Member since {new Date(userProfile.dateJoined.toString()).toLocaleDateString()}
+                                                    </p>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+                                    
+                                    <Separator className="bg-gray-700/50" />
+                                    
+                                    {/* User Stats */}
+                                    <div className="space-y-4">
+                                        <h4 className="text-lg font-medium text-white">Your Stats</h4>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div className="bg-gray-800/30 p-3 rounded-lg">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <Book size={14} className="text-yellow-400" />
+                                                    <span className="text-sm text-gray-400">Quizzes Created</span>
+                                                </div>
+                                                {isProfileLoading ? (
+                                                    <div className="h-6 w-12 shimmer rounded"></div>
+                                                ) : (
+                                                    <p className="text-xl font-semibold text-white">{userProfile.quizzesCreated?.length || 0}</p>
+                                                )}
+                                            </div>
+                                            <div className="bg-gray-800/30 p-3 rounded-lg">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <TrendingUp size={14} className="text-yellow-400" />
+                                                    <span className="text-sm text-gray-400">Attempts</span>
+                                                </div>
+                                                {isProfileLoading ? (
+                                                    <div className="h-6 w-12 shimmer rounded"></div>
+                                                ) : (
+                                                    <p className="text-xl font-semibold text-white">{userProfile.quizzesAttempted?.length || 0}</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Total Score */}
+                                        {userProfile.totalScore !== undefined && (
+                                            <div className="bg-gray-800/30 p-3 rounded-lg mt-3">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <Award size={14} className="text-yellow-400" />
+                                                    <span className="text-sm text-gray-400">Total Score</span>
+                                                </div>
+                                               
+                                            </div>
+                                        )}
+                                        
+                                        {/* Badges */}
+                                        {userProfile.badges && userProfile.badges.length > 0 && (
+                                            <div className="bg-gray-800/30 p-3 rounded-lg mt-3">
+                                                <div className="flex items-center gap-2 mb-3">
+                                                    <Trophy size={14} className="text-yellow-400" />
+                                                    <span className="text-sm text-gray-400">Badges</span>
+                                                </div>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {userProfile.badges.map((badge, index) => (
+                                                        <div key={index} className="px-2 py-1 bg-yellow-600/20 rounded-full text-xs text-yellow-300">
+                                                            {badge}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    
+                                    {/* Recent Activity */}
+                                    {userProfile.recentActivity && userProfile.recentActivity.length > 0 && (
+                                        <>
+                                            <Separator className="bg-gray-700/50" />
+                                            <div className="space-y-3">
+                                                <h4 className="text-lg font-medium text-white">Recent Activity</h4>
+                                                <ul className="space-y-2 max-h-40 overflow-y-auto">
+                                                    {userProfile.recentActivity.map((activity, index) => (
+                                                        <li key={index} className="text-sm bg-gray-800/30 p-2 rounded-lg">
+                                                            <div className="flex justify-between">
+                                                                <span className="text-yellow-400">{activity.type}</span>
+                                                                <span className="text-gray-400 text-xs">
+                                                                    {new Date(activity.date.toString()).toLocaleDateString()}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-gray-200 mt-1">
+                                                                {activity.quiz.toString()}
+                                                                {activity.score !== undefined && ` - Score: ${activity.score}`}
+                                                            </p>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </>
+                                    )}
+                                    
+                                    <Separator className="bg-gray-700/50" />
+                                    
+                                    {/* Quick Links */}
+                                    <div className="space-y-3">
+                                        <h4 className="text-lg font-medium text-white">Quick Links</h4>
+                                        <nav className="flex flex-col space-y-1">
+                                            <Link to="/myQuizzes">
+                                                <Button variant="ghost" className="w-full text-gray-200 text-left justify-start gap-3 hover:bg-gray-800/50 hover:text-yellow-400 bg-transparent">
+                                                    <Book size={16} />
+                                                    <span>My Quizzes</span>
+                                                </Button>
+                                            </Link>
+                                            <Link to="/myAttempts">
+                                                <Button variant="ghost" className="w-full text-gray-200 text-left justify-start gap-3 hover:bg-gray-800/50 hover:text-yellow-400 bg-transparent">
+                                                    <BarChart size={16} />
+                                                    <span>My Attempts</span>
+                                                </Button>
+                                            </Link>
+                                            
+                                        </nav>
+                                    </div>
+                                    
+                                    {/* Logout Button */}
+                                    <Button 
+                                        variant="destructive" 
+                                        className="w-full mt-auto bg-red-600 hover:bg-red-700"
+                                        onClick={handleLogOut}
+                                    >
+                                        <LogOut size={16} className="mr-2" />
+                                        Logout
+                                    </Button>
+                                </div>
+                            </SheetContent>
+                        </Sheet>
                   ) : (
                         <>
                             <Link to="/login">
@@ -344,6 +569,7 @@ function Landing() {
                     )}
                 </div>
             </div>
+                
 
             {/* Hero Section */}
             <section className="relative flex flex-col items-center text-center pt-40 pb-32 px-6 bg-transparent overflow-hidden">
@@ -553,6 +779,7 @@ function Landing() {
                             <Link to="/browse" className="text-gray-400 hover:text-yellow-400 transition-colors">Browse Quizzes</Link>
                             <Link to="/upload" className="text-gray-400 hover:text-yellow-400 transition-colors">Create Quiz</Link>
                             <Link to="/myQuizzes" className="text-gray-400 hover:text-yellow-400 transition-colors">My Quizzes</Link>
+                            <Link to="/myAttempts" className="text-gray-400 hover:text-yellow-400 transition-colors">My Attempts</Link>
                         </div>
                     </div>
                     

@@ -31,7 +31,7 @@ function Register() {
 
       navigate("/");
     } catch (error: any) {
-      setError(error.response?.data?.message || "Something went wrong. Please try again.");
+      setError(error.response?.data?.error || "Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -67,7 +67,7 @@ function Register() {
             
             <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-300 pl-1">Username</label>
+                <label className="text-sm font-extrabold text-gray-300 pl-1">Username</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -85,7 +85,7 @@ function Register() {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-300 pl-1">Email</label>
+                <label className="text-sm font-extrabold text-gray-300 pl-1">Email</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -105,8 +105,7 @@ function Register() {
               
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <label className="text-sm font-medium text-gray-300 pl-1">Password</label>
-                  <a href="#" className="text-xs text-indigo-400 hover:text-indigo-300">Forgot password?</a>
+                  <label className="text-sm font-extrabold text-gray-300 pl-1">Password</label>
                 </div>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

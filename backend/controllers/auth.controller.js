@@ -11,19 +11,19 @@ const register = async (req, res) => {
             password
         } = req.body
         if(!username || !email || !password)
-            return res.status(400).json({ message: "all fields are required" });
+            return res.status(400).json({ error: "all fields are required" });
         const existingUser = await User.findOne({ username });
         if (existingUser)
             return res.status(400).json({ error: "Username already exists" });
         const existingEmail = await User.findOne({ email });
         if (existingEmail)
-            return res.status(400).json({ message: 'Email already exists' });
+            return res.status(400).json({ error: 'Email already exists' });
         const emailCorrect = validateEmail(email);
         const passwordCorrect = validatePassword(password);
         if (!emailCorrect)
-            return res.status(400).json({ message: 'Invalid email' });
+            return res.status(400).json({ error: 'Invalid email' });
         if (!passwordCorrect)
-            return res.status(400).json({ message: 'Password must be at least 8 characters' });
+            return res.status(400).json({ error: 'Password must be at least 8 characters with capital letters, special characters and numbers' });
         const user = new User({
             username,
             email,
@@ -54,10 +54,10 @@ const login = async (req, res) => {
         } = req.body;
         const user = await User.findOne({ email });
         if (!user)
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ error: "User not found" });
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch)
-            return res.status(400).json({ message: "Incorrect password" });
+            return res.status(400).json({ error: "Incorrect password" });
         const token = jwt.sign({ _id: user._id }, process.env.JWT_KEY, { expiresIn: process.env.JWT_EXPIRES_IN });
         res.cookie('token', token, {
             httpOnly: true,
@@ -72,12 +72,17 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
     try {
-        res.clearCookie('token');
+        res.clearCookie('token', {
+            httpOnly: true,
+            sameSite: 'Strict' 
+        });
+
         res.status(200).json({ message: 'Logged out successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
+
 
 const isLoggedIn = async (req, res)=>{
     try {
