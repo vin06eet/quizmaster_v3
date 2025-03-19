@@ -27,22 +27,23 @@ interface Quiz {
   timeLimit: number;
   marksPerQuestion: number;
   difficultyLevel: string;
+  Public: boolean;
 }
 
 const UpdateQuiz: React.FC = () => {
-  const [timeLimit, setTimeLimit] = useState<number | string>('');
-  const [isPublic, setVisibility] = useState<boolean>(true);
-  const [applySameMarks, setApplySameMarks] = useState<boolean>(true);
+  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [timeLimit, setTimeLimit] = useState<number | string>(quiz?.timeLimit?quiz.timeLimit:60);
+  const [isPublic, setVisibility] = useState<boolean>(quiz?.Public?quiz?.Public:true);
+  const [applySameMarks, setApplySameMarks] = useState<boolean>(false);
   const [marksPerQuestion, setMarksPerQuestion] = useState<number | string>('');
   const [timeInputType, setTimeInputType] = useState<'total' | 'perQuestion'>('total');
   const { quizId } = useParams<{ quizId: string }>();
-  const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [message, setMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
   const navigate = useNavigate();
-  const [difficulty, setDifficulty] = useState(1);
+  const [difficulty, setDifficulty] = useState(quiz?.difficultyLevel=="Easy"?0:(quiz?.difficultyLevel=="Medium"?1:2));
   const difficultyLabels = ["Easy", "Medium", "Hard"];
 
   const handleSliderChange = (value: React.SetStateAction<number>[]) => {
@@ -313,7 +314,7 @@ const UpdateQuiz: React.FC = () => {
                       <Card className="bg-gray-800/30 border-gray-700/50">
                         <CardHeader className="pb-2">
                           <CardTitle className="text-lg flex items-center text-gray-100">
-                            <Award className="mr-2 h-5 w-5 text-yellow-500" />
+                            <Award className="mr-2 h-5 w-5 text-yellow-500"/>
                             Difficulty
                           </CardTitle>
                         </CardHeader>

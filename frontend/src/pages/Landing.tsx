@@ -82,7 +82,7 @@ function Landing() {
 
     const markAllAsRead = async () => {
         try {
-            await axios.patch("http://localhost:8080/api/user/markAllAsRead", { withCredentials: true });
+            await axios.patch("http://localhost:8080/api/user/markAllAsRead",{}, { withCredentials: true });
             setAnnouncements(prev => prev.map(notif => ({ ...notif, read: true })));
         } catch (error) {
             console.error("Error marking notifications as read:", error);
@@ -325,7 +325,7 @@ function Landing() {
                         <Link to="/profile">
                             <Button variant="outline" className="text-white border-gray-700 hover:bg-gray-800/50 hover:text-yellow-400 flex items-center gap-2 bg-transparent">
                                 <User size={16} />
-                                <span>Profile</span>
+                                <span className="lg:hidden">Profile</span>
                             </Button>
                         </Link>
                   ) : (

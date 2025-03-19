@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Trophy, ChevronRight, Plus, Play, Pencil, Trash, Send } from "lucide-react";
+import { Trophy, Plus, Play, Pencil, Trash, Send, X } from "lucide-react";
 
 interface QuizItem {
   _id: string;
@@ -12,10 +12,130 @@ interface QuizItem {
   Public: boolean;
 }
 
+interface SharePopupProps {
+  quizId: string;
+  quizTitle: string;
+  onClose: () => void;
+}
+
+const SharePopup: React.FC<SharePopupProps> = ({ quizId, quizTitle, onClose }) => {
+  const [email, setEmail] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | '' }>({ text: '', type: '' });
+
+  const handleShare = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email) {
+      setMessage({ text: "Please enter an email address", type: 'error' });
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const response = await axios.post(
+        `http://localhost:8080/api/quiz/send/${quizId}`, 
+        { email }, 
+        { withCredentials: true }
+      );
+      
+      setMessage({ text: "Quiz shared successfully!", type: 'success' });
+      setEmail("");
+      
+      // Close the popup after 2 seconds on success
+      setTimeout(() => {
+        onClose();
+      }, 2000);
+    } catch (error: any) {
+      setMessage({ 
+        text: error.response?.data?.error || "Failed to share quiz", 
+        type: 'error' 
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="bg-gradient-to-b from-gray-900 to-[#0E1225] border border-gray-800/50 rounded-lg shadow-xl p-6 w-full max-w-md relative">
+        <button 
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+        >
+          <X size={20} />
+        </button>
+        
+        <h3 className="text-xl font-bold text-white mb-1">Share Quiz</h3>
+        <p className="text-gray-400 mb-4">Share "{quizTitle}" with another user</p>
+        
+        <form onSubmit={handleShare}>
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+              Recipient's Email
+            </label>
+            <input 
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter email address"
+              className="w-full bg-[#0A0F1F] text-white border border-gray-800 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+            />
+          </div>
+          
+          {message.text && (
+            <div className={`p-3 rounded-lg mb-4 ${
+              message.type === 'success' ? 'bg-green-900/30 text-green-400 border border-green-800/50' : 
+              'bg-red-900/30 text-red-400 border border-red-800/50'
+            }`}>
+              {message.text}
+            </div>
+          )}
+          
+          <div className="flex justify-end">
+            <Button 
+              type="button" 
+              variant="ghost" 
+              onClick={onClose}
+              className="mr-2 text-gray-400 hover:text-white"
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit"
+              disabled={isSubmitting}
+              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-full shadow transition-all duration-200"
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+                  Sharing...
+                </>
+              ) : (
+                <>
+                  <Send size={16} className="mr-2" />
+                  Share Quiz
+                </>
+              )}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 const MyQuizzes: React.FC = () => {
   const [quizzesCreated, setQuizzes] = useState<QuizItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  const [sharePopup, setSharePopup] = useState<{ isOpen: boolean; quizId: string; quizTitle: string }>({
+    isOpen: false,
+    quizId: "",
+    quizTitle: ""
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,6 +169,14 @@ const MyQuizzes: React.FC = () => {
 
   const handleUpdateQuiz = (quizId: string) => {
     navigate(`/update/${quizId}`);
+  };
+
+  const handleShareQuiz = (quizId: string, quizTitle: string) => {
+    setSharePopup({
+      isOpen: true,
+      quizId,
+      quizTitle
+    });
   };
 
   const handleDeleteQuiz = async (quizId: string) => {
@@ -108,6 +236,15 @@ const MyQuizzes: React.FC = () => {
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_50%_50%,rgba(76,29,149,0.4),transparent_30%),radial-gradient(circle_at_80%_20%,rgba(234,179,8,0.4),transparent_30%)]"></div>
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500 to-transparent"></div>
       </div>
+      
+      {/* Share Popup */}
+      {sharePopup.isOpen && (
+        <SharePopup 
+          quizId={sharePopup.quizId}
+          quizTitle={sharePopup.quizTitle}
+          onClose={() => setSharePopup({ isOpen: false, quizId: "", quizTitle: "" })}
+        />
+      )}
       
       {/* Header with home button */}
       <div className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-8 py-4 border-b border-gray-800/50 bg-[#0A0F1F]/80 backdrop-blur-md shadow-md">
@@ -223,6 +360,7 @@ const MyQuizzes: React.FC = () => {
                     
                     <Button 
                       variant="default"
+                      onClick={() => handleShareQuiz(quiz._id, quiz.title)}
                       className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-full shadow transition-all duration-200"
                     >
                       <Send size={16} className="mr-2" />

@@ -320,8 +320,7 @@ const createAttempt = async (req, res)=>{
         if(!quiz)
             return res.status(400).json({error: 'Quiz not found'})
         const isPublic = quiz.Public
-        if(!isPublic)
-            return res.status(404).json({error: 'Quiz is not public'});
+        
         const quizDetails = {
             title: quiz.title,
             description: quiz.description,

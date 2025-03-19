@@ -58,30 +58,6 @@ const AttemptPerformance = () => {
     fetchPerformanceDetails();
   }, [quizId]);
 
-  // const downloadPDF = async () => {
-  //   try {
-  //     const response = await axios.post(
-  //       `http://localhost:8080/api/test/route/${quizId}`,
-  //       { htmlText: "<h1>Test Report</h1>" }, // Replace with dynamic HTML
-  //       { responseType: "blob",
-  //         withCredentials: true
-  //       } // Important for handling binary data
-  //     );
-  
-  //     // Create a Blob and trigger a download
-  //     const blob = new Blob([response.data], { type: "application/pdf" });
-  //     const link = document.createElement("a");
-  //     link.href = window.URL.createObjectURL(blob);
-  //     link.download = "Report.pdf";
-  //     document.body.appendChild(link);
-  //     link.click();
-  //     document.body.removeChild(link);
-  
-  //   } catch (error) {
-  //     console.error("Error downloading PDF:", error);
-  //   }
-  // };
-
   if (loading) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-[#0A0F1F]">
