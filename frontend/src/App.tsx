@@ -12,6 +12,7 @@ import { AttemptPerformance } from "./pages/AttemptPerformance";
 import { UploadCustomForm } from "./pages/UploadCustom";
 import { TooltipProvider } from './components/ui/tooltip';
 import { CreateQuizForm } from "./pages/TextCreate";
+import { QuizResultsPage } from "./pages/Report";
 
 
 
@@ -33,6 +34,7 @@ function App() {
         <Route path="/upload/custom" element={<UploadCustomForm/>}/>
         <Route path="/myAttempts" element={<MyAttempts/>}/>
         <Route path="/create/custom/quiz" element={<CreateQuizForm/>}/>
+        <Route path="/report/:attemptId" element={<QuizResultsPage/>}/>
       </Routes>
     </Router>
     </TooltipProvider>

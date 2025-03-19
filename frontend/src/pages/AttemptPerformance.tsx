@@ -243,6 +243,7 @@ const AttemptPerformance = () => {
                 
                 <Button 
                   className="w-full py-3 bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white font-medium rounded-full shadow transition-all duration-200"
+                  onClick={()=>navigate(`/report/${quizId}`)}
                 >
                   Generate Report
                 </Button>
