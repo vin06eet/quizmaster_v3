@@ -96,25 +96,29 @@ const MyAttempts: React.FC = () => {
   if (error) {
     return (
       <div className="w-screen min-h-screen flex items-center justify-center bg-[#0A0F1F]">
-        <div className="bg-gradient-to-b from-gray-900 to-[#0E1225] p-8 rounded-lg border border-gray-800/50 shadow-xl max-w-md w-full">
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-900/30 mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-white mb-2">Error Loading Attempts</h3>
-            <p className="text-red-400 font-medium">{error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="mt-6 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-full hover:from-yellow-600 hover:to-orange-700 transition-all duration-200"
-            >
-              Try Again
-            </button>
-          </div>
+      <div className="bg-gradient-to-b from-gray-900 to-[#0E1225] p-8 rounded-lg border border-gray-800/50 shadow-xl max-w-md w-full">
+      <div className="text-center">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-900/30 mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
         </div>
+        <h3 className="text-xl font-bold text-white mb-2">
+          No Quiz Attempts Found
+        </h3>
+        <p className="text-gray-400 font-medium">
+          Looks like you haven’t taken a quiz yet. Challenge yourself and start now!
+        </p>
+        <button
+          onClick={() => navigate("/browse")}
+          className="mt-6 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-full hover:from-yellow-600 hover:to-orange-700 transition duration-150 ease-in-out"
+        >
+          Browse Quizzes
+        </button>
       </div>
-    );
+    </div>
+   </div>
+ );
   }
 
   return (

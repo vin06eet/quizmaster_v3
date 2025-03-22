@@ -293,7 +293,7 @@ const QuizResultsPage: React.FC = () => {
               My Attempts
             </Button>
             <Button
-              onClick={() => navigate("/quizzes")}
+              onClick={() => navigate("/browse")}
               className="bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white font-medium rounded-full shadow px-6 py-3 flex items-center"
             >
               Try Another Quiz

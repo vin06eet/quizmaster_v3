@@ -30,6 +30,10 @@ const quizSchema = new mongoose.Schema({
             required: true
         }
     }],
+    maxMarks: {
+        type: Number,
+        default: 0
+    },
     time: {
         type: Number,
         default: Infinity

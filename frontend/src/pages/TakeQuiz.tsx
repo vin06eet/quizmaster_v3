@@ -632,10 +632,14 @@ const TakeQuiz: React.FC = () => {
               <CardDescription className="text-gray-300 text-lg mt-2">Your results are ready</CardDescription>
             </CardHeader>
             <CardContent className="p-8 space-y-6">
-              <div className="flex justify-center">
+            <div className="flex justify-center">
+              <div className="flex justify-center items-center gap-4">
+              <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent text-3xl font-bold">Marks Scored: </span>
                 <div className="w-32 h-32 rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-600/20 border-4 border-yellow-500 flex items-center justify-center">
-                  <span className="text-4xl font-bold text-yellow-400">{score}%</span>
+                  <span className="text-4xl font-bold text-yellow-400">{score}</span>
                 </div>
+              </div>
+            
               </div>
               
               <div className="grid grid-cols-2 gap-4 mt-8">

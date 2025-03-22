@@ -38,6 +38,10 @@ const attemptSchema = new mongoose.Schema({
             type: Boolean,
             default: false
         },
+        marks: {
+            type: mongoose.Schema.Types.Number,
+            ref: 'Quiz'
+        },
         score: {
             type: Number,
             default: 0
@@ -50,6 +54,10 @@ const attemptSchema = new mongoose.Schema({
     totalMarks: {
         type: Number,
         default: 0
+    },
+    maxMarks: {
+        type: mongoose.Schema.Types.Number,
+        ref: 'Quiz'
     }
 },{timestamps: true});
 

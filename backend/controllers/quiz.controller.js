@@ -32,16 +32,20 @@ const getQuizById = async (req, res)=>{
 }
 
 //works fins
-const updateQuiz = async (req, res)=>{
+const updateQuiz = async (req, res) => {
     try {
-        const quiz = await Quiz.findByIdAndUpdate(req.params.id, req.body, {new: true});
-        if(!quiz)
-            return res.status(404).json({message: "No quiz of this id found"})
-        res.status(200).json({quiz})
+        const quizData = req.body;
+        const maxMarks = (quizData.questions || []).reduce((sum, e) => sum + (e.marks || 1), 0);
+        const updatedData = { ...quizData, maxMarks };
+        const quiz = await Quiz.findByIdAndUpdate(req.params.id, updatedData, { new: true });
+        if (!quiz)
+            return res.status(404).json({ message: "No quiz of this ID found" });
+        res.status(200).json({ quiz });
     } catch (error) {
-        res.status(500).json({error: error.message})
+        res.status(500).json({ error: error.message });
     }
-}
+};
+
 
 
 //works fine
@@ -68,6 +72,7 @@ const uploadQuiz = async (req, res)=>{
         const {quizData} = req
         if(!quizData || !quizData.title || !quizData.questions)
             return res.status(400).json({message: "Invalid quiz data"})
+        const maxMarks = quizData.questions.reduce((sum, e) => sum + (e.marks || 1), 0);
         const newQuiz = new Quiz({
             title: quizData.title,
             description: quizData.description || '',
@@ -78,6 +83,7 @@ const uploadQuiz = async (req, res)=>{
                 answer: question.answer || 'a',
                 marks: 1 // Default marks for each question
             })),
+            maxMarks: maxMarks,
             time: 240, // Default time
             difficultyLevel: "Easy", // Default difficulty level
             attemptedBy: []
@@ -170,6 +176,7 @@ const attemptQuiz = async (req, res)=>{
                 options: question.options,
                 marks: question.marks
             })),
+            maxMarks: quiz.maxMarks,
             time: quiz.time,
             difficultyLevel: quiz.difficultyLevel
         };
@@ -211,8 +218,10 @@ const submitQuiz = async (req, res) => {
                 answer: question.answer, 
                 markedOption: answers[index], 
                 isCorrect: question.answer === answers[index], 
+                marks: question.marks,
                 score: question.answer === answers[index] ? question.marks : 0 
             })),
+            maxMarks: quiz.maxMarks,
             timeTaken: req.body.timeTaken || 0, 
             totalMarks: 0 
         };
@@ -278,6 +287,7 @@ const getAllAttempts = async (req, res) => {
             timeTaken: attempt.timeTaken,
             isCompleted: attempt.isCompleted,
             createdAt: attempt.createdAt,
+            maxMarks: attempt.maxMarks,
             questions: attempt.questions.map(q => ({
                 questionNumber: q.questionNumber,
                 question: q.question,
@@ -331,6 +341,7 @@ const createAttempt = async (req, res)=>{
                 answer: question.answer,
                 marks: question.marks
             })),
+            maxMarks: quiz.maxMarks,
             time: quiz.time,
             difficultyLevel: quiz.difficultyLevel
         };

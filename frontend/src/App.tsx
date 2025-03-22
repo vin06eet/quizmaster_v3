@@ -13,6 +13,7 @@ import { UploadCustomForm } from "./pages/UploadCustom";
 import { TooltipProvider } from './components/ui/tooltip';
 import { CreateQuizForm } from "./pages/TextCreate";
 import { QuizResultsPage } from "./pages/Report";
+import { QuizAttemptsAnalytics } from "./pages/quizAnalytics";
 
 
 
@@ -35,6 +36,7 @@ function App() {
         <Route path="/myAttempts" element={<MyAttempts/>}/>
         <Route path="/create/custom/quiz" element={<CreateQuizForm/>}/>
         <Route path="/report/:attemptId" element={<QuizResultsPage/>}/>
+        <Route path="/analytics" element={<QuizAttemptsAnalytics/>}/>
       </Routes>
     </Router>
     </TooltipProvider>
