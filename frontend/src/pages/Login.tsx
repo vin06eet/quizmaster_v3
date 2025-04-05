@@ -20,7 +20,7 @@ function Login() {
     setIsLoading(true);
 
     try {
-      await axios.post(`${apiUrl}/api/login`, { email, password });
+      await axios.post(`${apiUrl}/api/login`, { email, password }, {withCredentials: true});
 
       // Cookies.set("token", response.data.token, {
       //   path: "/",
