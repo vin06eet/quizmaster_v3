@@ -32,7 +32,7 @@ const register = async (req, res) => {
         await user.save();
         const token = jwt.sign({ _id: user._id }, process.env.JWT_KEY, { expiresIn: process.env.JWT_EXPIRES_IN });
         res.cookie('token', token, {
-            httpOnly: true,
+            // httpOnly: true,
             secure: true,
             sameSite: 'None',     
             maxAge: process.env.JWT_EXPIRES_IN,
@@ -61,7 +61,7 @@ const login = async (req, res) => {
             return res.status(400).json({ error: "Incorrect password" });
         const token = jwt.sign({ _id: user._id }, process.env.JWT_KEY, { expiresIn: process.env.JWT_EXPIRES_IN });
         res.cookie('token', token, {
-            httpOnly: true,
+            // httpOnly: true,
             secure: true,
             sameSite: 'None',     
             maxAge: process.env.JWT_EXPIRES_IN,
@@ -75,7 +75,7 @@ const login = async (req, res) => {
 const logout = async (req, res) => {
     try {
         res.clearCookie('token', {
-            httpOnly: true,
+            // httpOnly: true,
             sameSite: 'None',              
             secure: true 
         });

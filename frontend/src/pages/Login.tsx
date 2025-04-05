@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-// import Cookies from "js-cookie";
+import Cookies from "js-cookie";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -20,15 +20,14 @@ function Login() {
     setIsLoading(true);
 
     try {
-      await axios.post(`${apiUrl}/api/login`, { email, password }, {withCredentials: true});
+      const response = await axios.post(`${apiUrl}/api/login`, { email, password }, {withCredentials: true});
 
-      // Cookies.set("token", response.data.token, {
-      //   path: "/",
-      //   expires: 7,
-      //   sameSite: 'None',                   
-      //   secure: true,
-      //   httpOnly: true,
-      // });
+      Cookies.set("token", response.data.token, {
+        path: "/",
+        expires: 7,
+        sameSite: 'None',                   
+        secure: true
+      });
       
       navigate("/");
     } catch (error: any) {
