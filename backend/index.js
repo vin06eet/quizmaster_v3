@@ -14,13 +14,13 @@ const app = express()
 app.set('trust proxy', 1);
 
 app.use(cors({
-  origin: process.env.FRONTEND_ORIGIN,
+  origin: process.env.FRONTEND_URL,
   credentials: true
 }));
   
 
 app.options('*', cors({
-  origin: FRONTEND_ORIGIN,
+  origin: process.env.FRONTEND_URL,
   credentials: true
 }));
   
