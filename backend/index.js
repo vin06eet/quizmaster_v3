@@ -1,46 +1,43 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import connectDB from "./config/db.js";
-import bodyParser from "body-parser";
-import cookieParser from "cookie-parser";
-import authRoute from "./routes/auth.route.js";
-import userRoute from "./routes/user.route.js";
-import quizRoute from "./routes/quiz.route.js";
-import uploadRoute from "./routes/upload.route.js";
-import serverless from "serverless-http";
+import express from "express"
+import cors from "cors"
+import dotenv from "dotenv"
+import connectDB from "./config/db.js"
+import bodyParser from "body-parser"
+import cookieParser from "cookie-parser"
+import authRoute from "./routes/auth.route.js"
+import userRoute from "./routes/user.route.js"
+import quizRoute from "./routes/quiz.route.js"
+import uploadRoute from "./routes/upload.route.js"
 
-dotenv.config();
+dotenv.config()
+const app = express()
+const FRONTEND_ORIGIN = 'https://quizmaster-sepia.vercel.app';
 
-const app = express();
-const FRONTEND_ORIGIN = "https://quizmaster-sepia.vercel.app";
+app.use(cors({
+  origin: FRONTEND_ORIGIN,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
+}));
 
-// CORS Configuration
-app.use(
-  cors({
-    origin: FRONTEND_ORIGIN,
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "X-Requested-With",
-      "Accept",
-      "Origin",
-      "Access-Control-Allow-Credentials"
-    ],
-  })
-);
+app.options('*', cors({
+  origin: FRONTEND_ORIGIN,
+  credentials: true
+}));
 
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+app.use(bodyParser.json())
+app.use(cookieParser())
 
-app.use(cookieParser());
-connectDB();
+connectDB()
 
-app.use("/api", authRoute);
-app.use("/api", userRoute);
-app.use("/api", quizRoute);
-app.use("/api", uploadRoute);
 
-export const handler = serverless(app);
+
+app.use('/api', authRoute)
+app.use('/api', userRoute)
+app.use('/api', quizRoute)
+app.use('/api', uploadRoute)
+
+const PORT = process.env.PORT || 6000
+
+app.listen(PORT, ()=>{
+    console.log(`Listening at port ${PORT}`);
+})
