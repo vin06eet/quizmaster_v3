@@ -90,7 +90,7 @@ function Landing() {
         const checkAnnouncements = async () => {
             if (!userID) return; 
             try {
-                const response = await axios.get(`${apiUrl}:8080/api/fetch`, {withCredentials: true});
+                const response = await axios.get(`${apiUrl}/api/fetch`, {withCredentials: true});
                 const newAnnouncements = response.data.announcements ?? [];
                 setAnnouncements(newAnnouncements);
                 newAnnouncements.map((notif: { sentBy: any; }) => notif.sentBy);

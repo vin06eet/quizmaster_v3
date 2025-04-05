@@ -21,12 +21,15 @@ function Login() {
 
     try {
       const response = await axios.post(`${apiUrl}/api/login`, { email, password });
+
       Cookies.set("token", response.data.token, {
         path: "/",
         expires: 7,
         sameSite: 'None',                   
-        secure: true 
+        secure: true,
+        httpOnly: true,
       });
+      
       navigate("/");
     } catch (error: any) {
       setError(error.response?.data?.message || "Something went wrong. Please try again.");
