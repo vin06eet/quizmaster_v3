@@ -15,29 +15,19 @@ const FRONTEND_ORIGIN = 'https://quizmaster-sepia.vercel.app';
 
 app.use(cors({
   origin: FRONTEND_ORIGIN,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: [
-    "Content-Type",
-    "Authorization",
-    "X-Requested-With",
-    "Accept",
-    "Origin",
-    "Access-Control-Allow-Credentials"
-  ],
+  credentials: true
 }));
+  
 
 app.options('*', cors({
   origin: FRONTEND_ORIGIN,
   credentials: true
 }));
-
+  
 app.use(bodyParser.json())
 app.use(cookieParser())
 
 connectDB()
-
-
 
 app.use('/api', authRoute)
 app.use('/api', userRoute)
