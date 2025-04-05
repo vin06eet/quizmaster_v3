@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { Search, Home, Clock, FileText, DollarSign, Zap } from "lucide-react";
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface Question {
   marks: number;
@@ -28,7 +29,7 @@ const DataDisplayPage: React.FC = () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          "http://localhost:8080/api/quiz/public/get",
+          `${apiUrl}/api/quiz/public/get`,
           {
             withCredentials: true,
           }

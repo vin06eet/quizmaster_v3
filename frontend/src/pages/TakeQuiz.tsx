@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription }
 import { CheckCircle, AlertCircle, Flag, BookOpen, ChevronLeft, ChevronRight, Award, Clock, Menu, X, Trophy, Home } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../components/ui/tooltip';
 import { Link } from 'react-router-dom';
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 const TakeQuiz: React.FC = () => {
   const { quizId } = useParams<{ quizId: string }>();
@@ -55,7 +56,7 @@ const TakeQuiz: React.FC = () => {
     if (!showTnc) return;
     const createQuizAttempt = async () => {
       try {
-        const response = await axios.post(`http://localhost:8080/api/quiz/attempt/create/${quizId}`, {}, { withCredentials: true });
+        const response = await axios.post(`${apiUrl}/api/quiz/attempt/create/${quizId}`, {}, { withCredentials: true });
         if (response.data?.createdAttempt) {
           setAttemptId(response.data.createdAttempt._id);
           setQuizData(response.data.createdAttempt);
@@ -105,7 +106,7 @@ const TakeQuiz: React.FC = () => {
     if (!attemptId) return;
     setIsSubmitting(true);
     try {
-      await axios.patch(`http://localhost:8080/api/quiz/attempt/save/question/${attemptId}`, {
+      await axios.patch(`${apiUrl}/api/quiz/attempt/save/question/${attemptId}`, {
         questionNumber: currentQuestionIndex + 1,
         answer: selectedOptions[currentQuestionIndex] || null,
       }, { withCredentials: true });
@@ -135,7 +136,7 @@ const TakeQuiz: React.FC = () => {
   
     try {
       await axios.patch(
-        `http://localhost:8080/api/quiz/attempt/save/question/${attemptId}`,
+        `${apiUrl}/api/quiz/attempt/save/question/${attemptId}`,
         {
           questionNumber: currentQuestionIndex + 1,
           answer: null, 
@@ -154,13 +155,13 @@ const TakeQuiz: React.FC = () => {
     setIsSubmitting(true);
     try {
       
-      await axios.patch(`http://localhost:8080/api/quiz/attempt/save/question/${attemptId}`, {
+      await axios.patch(`${apiUrl}/api/quiz/attempt/save/question/${attemptId}`, {
         questionNumber: currentQuestionIndex + 1,
         answer: selectedOptions[currentQuestionIndex] || null,
       }, { withCredentials: true });
       
       const response = await axios.patch(
-        `http://localhost:8080/api/quiz/attempt/save/${attemptId}`, 
+        `${apiUrl}/api/quiz/attempt/save/${attemptId}`, 
         { parentQuizId: quizId, timeLeft: timeLeft }, 
         { withCredentials: true }
       );

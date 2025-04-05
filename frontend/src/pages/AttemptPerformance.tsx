@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { Check, X, Award, ArrowLeft, Trophy, Home } from 'lucide-react';
 import { Link } from 'react-router-dom';
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface Question {
   questionNumber: string;
@@ -44,7 +45,7 @@ const AttemptPerformance = () => {
     const fetchPerformanceDetails = async () => {
       try {
         const response = await axios.get<PerformanceResponse>(
-          `http://localhost:8080/api/quiz/attempt/performance/${quizId}`,
+          `${apiUrl}/api/quiz/attempt/performance/${quizId}`,
           { withCredentials: true }
         );
         setPerformanceDetails(response.data);

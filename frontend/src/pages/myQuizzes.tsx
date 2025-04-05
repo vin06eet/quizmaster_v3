@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Trophy, Plus, Play, Pencil, Trash, Send, X } from "lucide-react";
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface QuizItem {
   _id: string;
@@ -34,7 +35,7 @@ const SharePopup: React.FC<SharePopupProps> = ({ quizId, quizTitle, onClose }) =
     try {
       setIsSubmitting(true);
       const response = await axios.post(
-        `http://localhost:8080/api/quiz/send/${quizId}`, 
+        `${apiUrl}/api/quiz/send/${quizId}`, 
         { email }, 
         { withCredentials: true }
       );
@@ -142,7 +143,7 @@ const MyQuizzes: React.FC = () => {
     const fetchQuizzes = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://localhost:8080/api/myQuizzes", {
+        const response = await axios.get(`${apiUrl}/api/myQuizzes`, {
           withCredentials: true,
         });
 
@@ -184,7 +185,7 @@ const MyQuizzes: React.FC = () => {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`http://localhost:8080/api/quiz/${quizId}`, { withCredentials: true });
+      await axios.delete(`${apiUrl}/api/quiz/${quizId}`, { withCredentials: true });
 
       // Remove the deleted quiz from state
       setQuizzes((prevQuizzes) => prevQuizzes.filter((quiz) => quiz._id !== quizId));

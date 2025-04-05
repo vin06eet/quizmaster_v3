@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, ChevronRight } from "lucide-react";
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface AttemptItem {
   _id: string;
@@ -25,7 +26,7 @@ const MyAttempts: React.FC = () => {
     const fetchAttempts = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://localhost:8080/api/getallattempts", {
+        const response = await axios.get(`${apiUrl}/api/getallattempts`, {
           withCredentials: true,
         });
         if (Array.isArray(response.data)) {
@@ -72,7 +73,7 @@ const MyAttempts: React.FC = () => {
 
   const handleDeleteAttempt = async (attemptID: string) => {
     try {
-      await axios.delete(`http://localhost:8080/api//quiz/delete/attempt/${attemptID}`, { withCredentials: true });
+      await axios.delete(`${apiUrl}/api//quiz/delete/attempt/${attemptID}`, { withCredentials: true });
       setAttempts((prev) => prev.filter((attempt) => attempt._id !== attemptID));
     } catch (error) {
       console.error("Error deleting attempt:", error);

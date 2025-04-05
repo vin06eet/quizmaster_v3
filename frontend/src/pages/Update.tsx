@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { AlertCircle, CheckCircle, Clock, Award, Eye, Edit, CheckSquare, Trophy, Home } from 'lucide-react';
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface Question {
   answer: string | number | readonly string[] | undefined;
@@ -55,7 +56,7 @@ const UpdateQuiz: React.FC = () => {
       if (!quizId) return;
       setLoading(true);
       try {
-        const response = await axios.get(`http://localhost:8080/api/quiz/${quizId}`, {
+        const response = await axios.get(`${apiUrl}/api/quiz/${quizId}`, {
           withCredentials: true,
         });
         const fetchedQuiz = response.data.quiz;
@@ -158,7 +159,7 @@ const UpdateQuiz: React.FC = () => {
         Public: isPublic
       };
       
-      await axios.patch(`http://localhost:8080/api/quiz/${quizId}`, updatedQuiz, {
+      await axios.patch(`${apiUrl}/api/quiz/${quizId}`, updatedQuiz, {
         withCredentials: true,
       });
       setMessage('Quiz updated successfully!');

@@ -5,6 +5,7 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -19,7 +20,7 @@ function Login() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:8080/api/login", { email, password });
+      const response = await axios.post(`${apiUrl}/api/login`, { email, password });
 
       Cookies.set("token", response.data.token, {
         path: "/",

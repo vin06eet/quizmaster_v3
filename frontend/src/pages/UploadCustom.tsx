@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { Trophy, ChevronRight, Upload, Check } from "lucide-react";
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 const UploadCustomForm: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -68,7 +69,7 @@ const UploadCustomForm: React.FC = () => {
     
 
     try {
-      const response = await axios.post("http://localhost:8080/api/upload/custom", formData, {
+      const response = await axios.post(`${apiUrl}/api/upload/custom`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

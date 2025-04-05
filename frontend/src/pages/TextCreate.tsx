@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { Trophy, ChevronRight } from "lucide-react";
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 const CreateQuizForm: React.FC = () => {
   const [title, setTitle] = useState<string>("");
@@ -32,7 +33,7 @@ const CreateQuizForm: React.FC = () => {
     formData.append("difficulty", difficulty);
 
     try {
-      const response = await axios.post("http://localhost:8080/api/create/custom/quiz", {
+      const response = await axios.post(`${apiUrl}/api/create/custom/quiz`, {
         title: title,
         description: description,
         numQuestions: numQuestions,

@@ -10,6 +10,7 @@ import {
   Trophy, ChevronRight, Clock, Home, BarChart2, PieChartIcon, 
   CalendarDays, BrainCircuit, Target, Calendar, Activity
 } from "lucide-react";
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface Question {
   questionNumber: number;
@@ -45,7 +46,7 @@ const QuizAttemptsAnalytics: React.FC = () => {
     const fetchAttempts = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://localhost:8080/api/getallattempts", {
+        const response = await axios.get(`${apiUrl}/api/getallattempts`, {
           withCredentials: true,
         });
         // Sort attempts by date
@@ -601,18 +602,6 @@ const QuizAttemptsAnalytics: React.FC = () => {
               ) : (
                 <div className="text-center text-gray-400 py-4">
                   No recent activity in the selected time range
-                </div>
-              )}
-              
-              {filteredAttempts.length > 5 && (
-                <div className="mt-4 text-center">
-                  <Button 
-                    onClick={() => navigate("/history")}
-                    className="text-yellow-400 hover:text-yellow-300"
-                    variant="link"
-                  >
-                    View All History
-                  </Button>
                 </div>
               )}
             </div>

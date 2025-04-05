@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription, SheetClose  } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronRight, Upload, Search, List, User, Menu, Book, Trophy, Users, Bell, TrendingUp, Award, BarChart, Settings, LogOut } from "lucide-react";
+import { ChevronRight, Upload, Search, List, User, Menu, Book, Trophy, Users, Bell, TrendingUp, Award, BarChart, Library, Settings, LogOut } from "lucide-react";
 import { userInfo } from "os";
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface Announcement {
     _id: String,
@@ -58,7 +59,7 @@ function Landing() {
             
             setIsProfileLoading(true);
             try {
-                const response = await axios.get(`http://localhost:8080/api/user/${userID}`, { withCredentials: true });
+                const response = await axios.get(`${apiUrl}/api/user/${userID}`, { withCredentials: true });
                 console.log("User profile data:", response.data);
                 setUserProfile(response.data);
             } catch (error) {
@@ -76,7 +77,7 @@ function Landing() {
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/islogged', { withCredentials: true });
+                const response = await axios.get(`${apiUrl}/api/islogged`, { withCredentials: true });
                 setUserID(response.data.userID);
                 setIsLoggedIn(response.data.final); 
             } catch (error) {
@@ -90,7 +91,7 @@ function Landing() {
         const checkAnnouncements = async () => {
             if (!userID) return; 
             try {
-                const response = await axios.get(`http://localhost:8080/api/fetch`, {withCredentials: true});
+                const response = await axios.get(`${apiUrl}:8080/api/fetch`, {withCredentials: true});
                 const newAnnouncements = response.data.announcements ?? [];
                 setAnnouncements(newAnnouncements);
                 const userID = newAnnouncements.map((notif: { sentBy: any; }) => notif.sentBy);
@@ -117,7 +118,7 @@ function Landing() {
 
     const markAsRead = async (announceID: String) => {
         try {
-            await axios.patch(`http://localhost:8080/api/user/markAsRead/${announceID}`,{}, { withCredentials: true });
+            await axios.patch(`${apiUrl}/api/user/markAsRead/${announceID}`,{}, { withCredentials: true });
             setAnnouncements(prev => prev.map(notif => ({ ...notif, read: true })));
         } catch (error) {
             console.error("Error marking notifications as read:", error);
@@ -126,7 +127,7 @@ function Landing() {
     
     const deleteNotification = async (announceID: String) =>{
         try {
-            await axios.delete(`http://localhost:8080/api/user/delete/notif/${announceID}`, {withCredentials: true})
+            await axios.delete(`${apiUrl}/api/user/delete/notif/${announceID}`, {withCredentials: true})
         } catch (error) {
             console.error("Error deleting the notification")
         }   
@@ -134,7 +135,7 @@ function Landing() {
 
     const markAllAsRead = async () => {
         try {
-            await axios.patch("http://localhost:8080/api/user/markAllAsRead",{}, { withCredentials: true });
+            await axios.patch(`${apiUrl}/api/user/markAllAsRead`,{}, { withCredentials: true });
             setAnnouncements(prev => prev.map(notif => ({ ...notif, read: true })));
         } catch (error) {
             console.error("Error marking notifications as read:", error);
@@ -144,7 +145,7 @@ function Landing() {
     useEffect(() => {
         const findUsername = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/quiz/${userID}`, {withCredentials: true});
+                const response = await axios.get(`${apiUrl}/api/quiz/${userID}`, {withCredentials: true});
                 // setUsername(response.data.username);
             } catch (error) {
                 console.error('Error finding username', error)
@@ -192,7 +193,7 @@ function Landing() {
 
     const handleLogOut = async () => {
         try {
-            await axios.post("http://localhost:8080/api/logout", {}, { withCredentials: true });
+            await axios.post(`${apiUrl}/api/logout`, {}, { withCredentials: true });
             setIsLoggedIn(false);
         } catch (error) {
             console.error({ "Error logging out": error });
@@ -537,7 +538,12 @@ function Landing() {
                                                     <span>My Attempts</span>
                                                 </Button>
                                             </Link>
-                                            
+                                            {/* <Link to="/analytics">
+                                                <Button variant="ghost" className="w-full text-gray-200 text-left justify-start gap-3 hover:bg-gray-800/50 hover:text-yellow-400 bg-transparent">
+                                                    <Library size={16} />
+                                                    <span>Analytics</span>
+                                                </Button>
+                                            </Link> */}
                                         </nav>
                                     </div>
                                     

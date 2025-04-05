@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface User {
   _id: string;
@@ -29,7 +30,7 @@ const ShareQuiz: React.FC<ShareQuizProps> = ({ quizId, onClose }) => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8080/api/user');
+      const response = await axios.get(`${apiUrl}/api/user`);
       setUsers(response.data);
       setFilteredUsers(response.data);
     } catch (err) {
@@ -59,7 +60,7 @@ const ShareQuiz: React.FC<ShareQuizProps> = ({ quizId, onClose }) => {
         setError('User not found');
         return;
       }
-      const response = await axios.post(`http://localhost:8080/api/quizzes/${quizId}/share`, { email: user.email });
+      const response = await axios.post(`${apiUrl}/api/quizzes/${quizId}/share`, { email: user.email });
       setMessage(response.data.message || 'Quiz shared successfully');
       setUsername('');
     } catch (err: any) {

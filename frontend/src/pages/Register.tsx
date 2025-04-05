@@ -5,6 +5,7 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 function Register() {
   const [username, setUsername] = useState("");
@@ -20,7 +21,7 @@ function Register() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:8080/api/register", { username, email, password });
+      const response = await axios.post(`${apiUrl}/api/register`, { username, email, password });
 
       Cookies.set("token", response.data.token, {
         path: "/",

@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Trophy, ChevronRight, Book, Check, X, AlertTriangle, ArrowLeft, Home } from "lucide-react";
 import axios from "axios";
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface QuizResult {
   title: string;
@@ -25,7 +26,7 @@ const QuizResultsPage: React.FC = () => {
     const fetchResults = async () => {
       try {
         setLoading(true);
-        const response = await axios.post(`http://localhost:8080/api/test/route/${attemptId}`, {}, {withCredentials: true});
+        const response = await axios.post(`${apiUrl}/api/test/route/${attemptId}`, {}, {withCredentials: true});
 
         let data = response.data;
     if (typeof data === 'string') {
