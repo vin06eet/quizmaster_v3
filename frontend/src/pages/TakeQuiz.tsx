@@ -219,10 +219,10 @@ const TakeQuiz: React.FC = () => {
     return 'text-red-400 animate-pulse'; 
   };
 
-  const togglePause = () => {
-    setIsPaused(prev => !prev);
-    setToastMessage(isPaused ? "Quiz resumed" : "Quiz paused - timer stopped");
-  };
+  // const togglePause = () => {
+  //   setIsPaused(prev => !prev);
+  //   setToastMessage(isPaused ? "Quiz resumed" : "Quiz paused - timer stopped");
+  // };
 
   const toggleQuestionPanel = () => {
     setShowQuestionPanel(!showQuestionPanel);

@@ -34,7 +34,7 @@ const SharePopup: React.FC<SharePopupProps> = ({ quizId, quizTitle, onClose }) =
 
     try {
       setIsSubmitting(true);
-      const response = await axios.post(
+      await axios.post(
         `${apiUrl}/api/quiz/send/${quizId}`, 
         { email }, 
         { withCredentials: true }

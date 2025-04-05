@@ -93,7 +93,7 @@ function Landing() {
                 const response = await axios.get(`${apiUrl}:8080/api/fetch`, {withCredentials: true});
                 const newAnnouncements = response.data.announcements ?? [];
                 setAnnouncements(newAnnouncements);
-                const userID = newAnnouncements.map((notif: { sentBy: any; }) => notif.sentBy);
+                newAnnouncements.map((notif: { sentBy: any; }) => notif.sentBy);
                 // findUsername(userID);
             } catch (error) {
                 console.error('Error finding announcements', error);
@@ -144,7 +144,7 @@ function Landing() {
     useEffect(() => {
         const findUsername = async () => {
             try {
-                const response = await axios.get(`${apiUrl}/api/quiz/${userID}`, {withCredentials: true});
+                await axios.get(`${apiUrl}/api/quiz/${userID}`, {withCredentials: true});
                 // setUsername(response.data.username);
             } catch (error) {
                 console.error('Error finding username', error)

@@ -102,12 +102,7 @@ const QuizAttemptsAnalytics: React.FC = () => {
       (sum, attempt) => sum + attempt.questions.filter(q => q.isCorrect).length, 0
     );
 
-    const totalScore = filteredAttempts.reduce(
-        (sum, attempt) => {
-          const attemptScore = attempt.questions.reduce((qSum, q) => qSum + q.marks, 0);
-          return sum + attemptScore;
-        }, 0
-      );
+    
 
     // Calculate average score
     const averageScore = filteredAttempts.reduce(
@@ -551,7 +546,7 @@ const QuizAttemptsAnalytics: React.FC = () => {
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#111827', border: '1px solid #374151', borderRadius: '0.375rem' }}
                       labelStyle={{ color: '#f3f4f6' }}
-                      formatter={(value: any, name: any, props: any) => {
+                      formatter={(value: any, props: any) => {
                         const item = props.payload;
                         return [`${value}% (${item.correct}/${item.total})`, 'Score'];
                       }}
