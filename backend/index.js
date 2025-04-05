@@ -11,7 +11,19 @@ import uploadRoute from "./routes/upload.route.js"
 
 dotenv.config()
 const app = express()
-app.use(cors({ origin: 'https://quizmaster-sepia.vercel.app', credentials: true }))
+const FRONTEND_ORIGIN = 'https://quizmaster-sepia.vercel.app';
+
+app.use(cors({
+  origin: FRONTEND_ORIGIN,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+app.options('*', cors({
+  origin: FRONTEND_ORIGIN,
+  credentials: true
+}));
 
 app.use(bodyParser.json())
 app.use(cookieParser())
