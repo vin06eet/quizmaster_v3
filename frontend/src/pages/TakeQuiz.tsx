@@ -26,7 +26,7 @@ const TakeQuiz: React.FC = () => {
   const [showQuestionPanel, setShowQuestionPanel] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
+  const [isPaused] = useState(false);
   const [originalTimeLeft, setOriginalTimeLeft] = useState<number>(0);
   const [completionTime, setCompletionTime] = useState<number>(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
