@@ -11,7 +11,7 @@ import uploadRoute from "./routes/upload.route.js"
 
 dotenv.config()
 const app = express()
-app.use(cors({ credentials: true }))
+app.use(cors({ origin: 'https://quizmaster-v3.onrender.com', credentials: true }))
 
 app.use(bodyParser.json())
 app.use(cookieParser())
