@@ -11,6 +11,7 @@ import uploadRoute from "./routes/upload.route.js"
 
 dotenv.config()
 const app = express()
+app.set('trust proxy', 1);
 const FRONTEND_ORIGIN = 'https://quizmaster-v3.vercel.app';
 
 app.use(cors({
