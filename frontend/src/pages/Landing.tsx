@@ -2,11 +2,10 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription, SheetClose  } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription  } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronRight, Upload, Search, List, User, Menu, Book, Trophy, Users, Bell, TrendingUp, Award, BarChart, Library, Settings, LogOut } from "lucide-react";
-import { userInfo } from "os";
+import { ChevronRight, Upload, Search, List, User, Menu, Book, Trophy, Users, Bell, TrendingUp, Award, BarChart, LogOut } from "lucide-react";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface Announcement {

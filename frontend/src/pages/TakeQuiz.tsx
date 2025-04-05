@@ -6,7 +6,6 @@ import { Progress } from '../components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '../components/ui/card';
 import { CheckCircle, AlertCircle, Flag, BookOpen, ChevronLeft, ChevronRight, Award, Clock, Menu, X, Trophy, Home } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../components/ui/tooltip';
-import { Link } from 'react-router-dom';
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 const TakeQuiz: React.FC = () => {

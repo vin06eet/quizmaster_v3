@@ -8,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, CheckCircle, Clock, Award, Eye, Edit, CheckSquare, Trophy, Home } from 'lucide-react';
+import { AlertCircle, CheckCircle, Clock, Award, Eye, Edit, CheckSquare, Trophy } from 'lucide-react';
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface Question {

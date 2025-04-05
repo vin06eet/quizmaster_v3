@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Check, X, Award, ArrowLeft, Trophy, Home } from 'lucide-react';
+import { Check, X, Award, ArrowLeft, Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 

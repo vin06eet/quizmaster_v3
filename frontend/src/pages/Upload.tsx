@@ -3,7 +3,7 @@ import { useState, ChangeEvent, FormEvent, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { Trophy, ChevronRight, Upload, Check, Home } from "lucide-react";
+import { Trophy, ChevronRight, Upload, Check } from "lucide-react";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 const UploadForm: React.FC = () => {

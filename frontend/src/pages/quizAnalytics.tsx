@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  PieChart, Pie, Cell, LineChart, Line, AreaChart, Area
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, AreaChart, Area
 } from "recharts";
 import { 
-  Trophy, ChevronRight, Clock, Home, BarChart2, PieChartIcon, 
+  Trophy, ChevronRight, Clock, BarChart2,
   CalendarDays, BrainCircuit, Target, Calendar, Activity
 } from "lucide-react";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
