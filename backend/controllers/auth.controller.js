@@ -34,7 +34,8 @@ const register = async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,
             maxAge: process.env.JWT_EXPIRES_IN,
-            sameSite: 'strict'
+            sameSite: 'None',                   
+            secure: true 
         });
         res.status(201).json({
             message: "User created successfully",
@@ -62,7 +63,8 @@ const login = async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,
             maxAge: process.env.JWT_EXPIRES_IN,
-            sameSite: 'strict'
+            sameSite: 'None',                  
+            secure: true 
         });
         res.status(200).json({ token });
     } catch (error) {
@@ -74,7 +76,8 @@ const logout = async (req, res) => {
     try {
         res.clearCookie('token', {
             httpOnly: true,
-            sameSite: 'Strict' 
+            sameSite: 'None',                   // allows cross-origin cookies
+            secure: true 
         });
 
         res.status(200).json({ message: 'Logged out successfully' });

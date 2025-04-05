@@ -26,8 +26,8 @@ function Register() {
       Cookies.set("token", response.data.token, {
         path: "/",
         expires: 7,
-        secure: true,
-        sameSite: "Strict",
+        sameSite: 'None',                   
+        secure: true 
       });
 
       navigate("/");
