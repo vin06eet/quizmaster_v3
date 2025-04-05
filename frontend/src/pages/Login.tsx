@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import Cookies from "js-cookie";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -19,7 +20,13 @@ function Login() {
     setIsLoading(true);
 
     try {
-      await axios.post(`${apiUrl}/api/login`, { email, password });
+      const response = await axios.post(`${apiUrl}/api/login`, { email, password });
+      Cookies.set("token", response.data.token, {
+        path: "/",
+        expires: 7,
+        sameSite: 'None',                   
+        secure: true 
+      });
       navigate("/");
     } catch (error: any) {
       setError(error.response?.data?.message || "Something went wrong. Please try again.");
