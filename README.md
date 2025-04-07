@@ -49,7 +49,6 @@ Follow the instructions below to set up and run Quizmaster locally on your machi
 
 ```bash
 git clone https://github.com/vin06eet/quizmaster_v3.git
-cd quizmaster
 ```
 
 ### 2. Set up the backend
